@@ -1,0 +1,163 @@
+$cream: #ddddcc;
+$dark_blue: #202027;
+
+$spring_green: #478547;
+$summer_gold: #dbb448;
+$autumn_red: #994936;
+$winter_blue: #343445;
+
+$border_thickness: 2px;
+$border: $border_thickness solid white;
+$invisible_border: $border_thickness solid $dark_blue;
+
+.container-fluid, .col-1, .col-2, .col-3, .col-4, .col-6, .col-8, .col-md-4, .col-md-6, .col-md-8 {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.row {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+body {
+  background-color: $dark_blue;
+  color: white;
+  font-family: "Domine", serif;
+}
+
+a, .link {
+  color: $autumn_red;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: none;
+    color: $autumn_red;
+  }
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+h1, h2, h3, p {
+  margin: 0 4vw;
+}
+
+h1 {
+  font-size: 5vh;
+}
+
+h2 {
+  font-size: 4vh;
+  text-align: center;
+  padding-top: 4vh;
+}
+
+h3 {
+  font-size: 3vh;
+  text-align: center;
+  padding-top: 4vh;
+}
+
+p, li {
+  font-size: 2vh;
+  font-family: "Open Sans", sans-serif;
+  padding-top: 3vh;
+}
+
+ul {
+  margin-left: 12vw;
+}
+
+.caption {
+  font-size: 1.75vh;
+  font-family: "Open Sans", sans-serif;
+  text-align: center;
+  width: 100%;
+}
+
+.topbar {
+  position: fixed;
+  background-color: $dark_blue;
+  z-index: 1;
+
+  .menu-left, .menu-center, .menu-right {
+    border: $invisible_border;
+  }
+
+  .menu-left, .menu-center, .menu-right, .game-link {
+    text-align: center;
+
+    h1, h3 {
+      height: 8vh;
+      margin-bottom: 0;
+    }
+
+    h3 {
+      padding-top: 2vh;
+    }
+  }
+
+  $menu_border_radius: 15px;
+
+  .menu-left:hover {
+    border-right: $border;
+    border-bottom: $border;
+    border-radius: 0 0 $menu_border_radius 0;
+  }
+
+  .menu-center:hover {
+    border-left: $border;
+    border-right: $border;
+    border-bottom: $border;
+    border-radius: 0 0 $menu_border_radius $menu_border_radius;
+  }
+
+  .menu-right.expanded {
+    border-left: $border;
+    border-bottom: $border;
+    border-radius: 0 0 0 0;
+  }
+
+  .menu-right > h3 {
+    cursor: default;
+  }
+
+  .games-list {
+    position: absolute;
+    z-index: 1;
+    clear: both;
+    width: 100%;
+    margin-top: $border_thickness;
+    margin-left: -$border_thickness;
+    border-left: $border;
+    border-bottom: $border;
+    border-radius: 0 0 0 $menu_border_radius;
+    background-color: $dark_blue;
+
+    .game-link {
+      border: none;
+      border-bottom: $invisible-border;
+
+      &:hover {
+        border-bottom: $border;
+      }
+    }
+  }
+}
+
+.celestial-card {
+  width: 100%;
+  display: grid;
+
+  &.padded {
+    padding: 2vh 0 1vh 0;
+  }
+
+  img {
+    width: calc(3vw + 4vh);
+    margin: auto;
+    border-radius: calc(.25vw + .5vh);
+  }
+}
