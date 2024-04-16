@@ -22,7 +22,7 @@ function Page(props: {element: (p: PageState) => React.ReactNode }) {
     return <>
         <TopBar {...{gamesExpanded, setGamesExpanded}}/>
         <div className="container-fluid">
-            <div className="row" style={{paddingTop: "12vh"}}/>
+            <div className="row" style={{paddingTop: "18vh"}}/>
             <div className="row">
                 <div className="col-12 col-md-6 offset-md-3">
                     {props.element(pageState)}
