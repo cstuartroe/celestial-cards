@@ -7,6 +7,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     'celestial-cards-5c3e08b2e80b.herokuapp.com',
+    'celestial-cards.conorstuartroe.com',
 ]
 
 DEBUG = bool(os.getenv('DEBUG'))
