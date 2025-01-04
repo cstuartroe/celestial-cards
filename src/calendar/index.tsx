@@ -25,7 +25,7 @@ function CelestialImage(body: number, count: number) {
           <img
               src={`/static/img/blank_${count}_${CELESTIAL_BODIES[body]}s.png`}
               style={{
-                width: "calc(2vw + 1vh)",
+                width: "calc(2vw + 3vh)",
                 margin: "2px",
               }}
               alt={`${count} ${CELESTIAL_BODIES[body]}s`}
@@ -56,14 +56,9 @@ function DaySquare(props: { day: Day, currentDay: Day }) {
     content = <FontAwesomeIcon icon={SEASON_ICONS[day.season]}/>;
   }
 
-  const style: React.CSSProperties = {};
-  if (day.month === -1) {
-    style.marginTop = ".3vw";
-  }
-
   return (
     <div className={className}>
-      <p style={style}>{content}</p>
+      <p>{content}</p>
     </div>
   );
 }
