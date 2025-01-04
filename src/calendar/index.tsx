@@ -2,14 +2,15 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCloud, faSun, faLeaf, faSnowflake, faGlassCheers, faFrog } from "@fortawesome/free-solid-svg-icons";
+import {SEASONS} from "../Card";
 import {
   range,
   Day,
   NewDate,
   WEEKEND_DAYS,
-  SEASONS,
   HOLIDAYS,
   MONTHS,
+  CELESTIAL_BODIES,
   gregorianDateToNewDate,
   dayToString,
   dayEq,
@@ -17,7 +18,6 @@ import {
 
 const MONTH_SYMBOLS = ['♈︎', '♉︎', '♊︎', '♋︎', '♌︎', '♍︎', '♎︎', '♏︎', '♐︎', '♑︎', '♒︎', '♓︎'];
 const SEASON_ICONS = [faCloud, faSun, faLeaf, faSnowflake];
-const CELESTIAL_BODIES = ["moon", "sun", "star"];
 
 function CelestialImage(body: number, count: number) {
   return (
@@ -208,11 +208,14 @@ export default class NewCalendar extends Component<{}, NewDate> {
               <p style={{textAlign: 'center'}}>
                 <Link to={'/calendar/explanation'}>explanation</Link>
               </p>
+              <p style={{textAlign: 'center'}}>
+                <Link to={'/calendar/birthday'}>birthday card</Link>
+              </p>
             </div>
 
             {this.specialDay(-1)}
             {[0, 1].map(s => (
-              <Season key={s} currentDay={this.state.day} index={s}/>
+                <Season key={s} currentDay={this.state.day} index={s}/>
             ))}
             {this.specialDay(-2)}
             {[2, 3].map(s => (

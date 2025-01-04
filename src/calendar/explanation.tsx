@@ -57,12 +57,12 @@ export default class NewCalendarExplanation extends Component<{}, {}> {
                 Years begin around the March equinox, on March 20, 21, or 22 of the
                 Gregorian calendar. Year 1 in this calendar would have begun in March of
                 3346 BCE, a fairly random year I picked because it's around the advent of
-                written history. Here are the New Years' Days for the next 10 years:
+                written history. Here are the New Years' Days for the current and next five years:
               </p>
 
               {this.dateTable(
                 addDays(new Date(), -365),
-                365*11 + 3,
+                365*6 + 3,
                 (d) => d.day.season !== -1
               )}
 

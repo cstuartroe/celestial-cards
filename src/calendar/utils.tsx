@@ -1,10 +1,12 @@
+import Card, {SEASONS, Count} from "../Card";
+
 export const range = (n: number) => Array.from(Array(n).keys());
 
 export const WEEKDAYS = ['Skyday','Marsday','Mercuryday','Jupiterday','Venusday','Saturnday'];
 export const HOLIDAYS = ['First Equinox','First Solstice','Second Equinox','Second Solstice',];
-export const SEASONS = ["Spring", "Summer", "Autumn", "Winter"];
 export const MONTHS = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
   "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
+export const CELESTIAL_BODIES = ["moon", "sun", "star"] as const;
 
 export const WEEKEND_DAYS = [0, 5];
 
@@ -23,7 +25,6 @@ function gregorianDateToUTC(date: Date) {
 export const FIRST_NEW_YEARS_DAY = new Date('1950-03-22T00:00:00+0000');
 const FIRST_YEAR = 5296; // 22 Mar 1916 thru 21 March 1917
 
-console.log(FIRST_NEW_YEARS_DAY);
 
 export type Day = {
   season: number, // -1 for NYD, 0 for spring, so on (-2 for leap day)
@@ -88,8 +89,6 @@ export type NewDate = {
 export function gregorianDateToNewDate(date: Date): NewDate {
   let nyd = FIRST_NEW_YEARS_DAY, year = FIRST_YEAR;
   date = gregorianDateToUTC(date);
-  console.log(date);
-  console.log(nyd);
 
   while (true) {
     let next_nyd = addDays(nyd, 365);
@@ -120,5 +119,18 @@ export function dayToString(day: Day) {
   } else {
     return WEEKDAYS[day.date % 6] + " " + (day.date + 1).toString() + "\xa0"
       + MONTHS[day.season*3 + day.month];
+  }
+}
+
+export function dayToCard(day: Day) {
+  if (day.season === -1) {
+    return <Card season={"spring"} count={1} shape={"moon"}/>;
+  } else if (day.season === -2) {
+    return <Card season={"autumn"} count={1} shape={"moon"}/>;
+  } else if (day.month === -1) {
+    return <Card season={SEASONS[day.season].toLowerCase() as any} count={1} shape={"moon"}/>;
+  } else {
+    const count = Math.floor(day.date/6) + 1 as Count
+    return <Card season={SEASONS[day.season]} count={count} shape={CELESTIAL_BODIES[day.month]}/>;
   }
 }

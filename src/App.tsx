@@ -10,6 +10,7 @@ import Poker from "./games/Poker";
 import Tensor from "./games/Tensor";
 import NewCalendar from "./calendar";
 import NewCalendarExplanation from "./calendar/explanation";
+import NewCalendarBirthdayViewer from "./calendar/birthday";
 
 type PageState = {
     expandGames: () => void,
@@ -76,6 +77,10 @@ class App extends Component {
                 {
                     path: "/calendar/explanation",
                     element: <NewCalendarExplanation/>,
+                },
+                {
+                    path: "/calendar/birthday",
+                    element: <NewCalendarBirthdayViewer/>,
                 },
             ])}/>
         );
