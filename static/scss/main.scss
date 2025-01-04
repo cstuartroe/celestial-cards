@@ -161,3 +161,123 @@ ul {
     border-radius: calc(.25vw + .5vh);
   }
 }
+
+.calendar-style {
+  text-align: center;
+
+
+  .container-fluid .row {
+    padding: 1em;
+  }
+
+  .fa {
+    font-size: 80% !important;
+  }
+
+  #current, .explanation {
+    font-family: "Domine", serif;
+  }
+
+  #current {
+    font-size: calc(3vw + 1.5vh);
+    font-weight: 600;
+  }
+
+  .explanation p {
+    text-align: left;
+  }
+
+  td {
+    padding: 0 1vw;
+  }
+
+  .season-wrapper {
+    padding: calc(.6vw + .3vh);
+    background-color: $dark_blue;
+  }
+
+  .season {
+    width: 100%;
+    border-radius: calc(1.5vw + 1vh);
+    display: inline-block;
+    text-align: center;
+    padding: 1em;
+  }
+
+  .season h2 {
+    font-family: "Domine", serif;
+    font-size: calc(1.5vw + 1vh);
+    font-weight: 600;
+    margin: .15vw;
+  }
+
+  .month {
+    display: inline-block;
+  }
+
+  .month tr th div {
+    height: calc(2vw + 1vh);
+    width: calc(2vw + 1vh);
+    border-radius: calc(2vw + 1vh);
+    text-align: center;
+    margin: 2px;
+    display: table;
+  }
+
+  .month tr th div p {
+    font-size: calc(1vw + 1vh);
+    font-family: "Domine", serif;
+    margin: 0;
+    margin-top: .4vw;
+    padding-top: 0;
+  }
+
+  svg[data-prefix='fas'] {
+    font-size: calc(1.5vw + 1vh);
+  }
+
+  .weekend {
+    background-color: $cream;
+  }
+
+  .weekend p {
+    color: $dark_blue;
+  }
+
+  .weekday {
+    background-color: $dark_blue;
+  }
+
+  .weekday p, .activeDay p {
+    color: $cream;
+  }
+
+  .activeDay {
+    background-color: #9988ff !important;
+  }
+
+  #new-year {
+    background-color: #ccccdd;
+    color: $dark_blue;
+  }
+
+  #Spring {
+    background-color: #478547;
+    color: $cream;
+  }
+
+  #Summer {
+    background-color: #caa02b;
+    color: $cream;
+  }
+
+  #Autumn {
+    background-color: #994936;
+    color: $cream;
+  }
+
+  #Winter {
+    background-color: #343445;
+    color: $cream;
+  }
+}

@@ -8,6 +8,8 @@ import Overview from "./Overview";
 import SetGame from "./games/SetGame";
 import Poker from "./games/Poker";
 import Tensor from "./games/Tensor";
+import NewCalendar from "./calendar";
+import NewCalendarExplanation from "./calendar/explanation";
 
 type PageState = {
     expandGames: () => void,
@@ -66,6 +68,14 @@ class App extends Component {
                     element: <Page element={ps => (
                         <Tensor/>
                     )}/>,
+                },
+                {
+                    path: "/calendar",
+                    element: <NewCalendar/>,
+                },
+                {
+                    path: "/calendar/explanation",
+                    element: <NewCalendarExplanation/>,
                 },
             ])}/>
         );
