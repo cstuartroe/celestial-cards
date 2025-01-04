@@ -3,7 +3,7 @@ import Card, {SEASONS, Count} from "../Card";
 export const range = (n: number) => Array.from(Array(n).keys());
 
 export const WEEKDAYS = ['Skyday','Marsday','Mercuryday','Jupiterday','Venusday','Saturnday'];
-export const HOLIDAYS = ['First Equinox','First Solstice','Second Equinox','Second Solstice',];
+export const HOLIDAYS = ['Spring Equinox','Summer Solstice','Autumn Equinox','Winter Solstice',];
 export const MONTHS = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
   "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
 export const CELESTIAL_BODIES = ["moon", "sun", "star"] as const;

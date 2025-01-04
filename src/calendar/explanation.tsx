@@ -70,11 +70,9 @@ export default class NewCalendarExplanation extends Component<{}, {}> {
 
               <p>
                 The year is broken into the four standard seasons, each of which begins with an equinox or
-                solstice. Because seasons are not the same in the northern and southern hemispheres,
-                I have declined to officially label the seasons as "Spring", "Summer", "Autumn", and
-                "Winter", and named the equinoxes and solstices "First" and "Second" rather than anything
-                denoting a particular ecological season (although I obviously used colors and iconography suggestive of
-                seasons in the temperate northern hemisphere in this web app - my cultural bias is showing!&nbsp;😠)
+                solstice. This calendar is labeled and aligned according to the seasons of the temperate
+                northern hemisphere for simplicity, while acknowledging that this does not describe
+                climate patterns in other parts of the world.
               </p>
 
               <p>
