@@ -108,12 +108,12 @@ export default class NewCalendarExplanation extends Component<{}, {}> {
               <h3>Extended calendar</h3>
 
               <p>
-                Just for ease of reference, here's all days one year in the past and future:
+                Just for ease of reference, here's all days two years in the past and future:
               </p>
 
               {this.dateTable(
-                addDays(new Date(), -365),
-                365 * 2 + 1,
+                addDays(new Date(), -365*2 - 1),
+                365 * 4 + 2,
                 _ => false
               )}
             </div>

@@ -29,10 +29,10 @@ export default class Home extends Component<Props, State> {
                     </span>.
                 </p>
 
-                <h3>How do I get my hands on some??</h3>
+                <h3>How do I get my hands on some?</h3>
 
                 <p>
-                    Two question marks - aren't you eager? The easiest way is to get your virtual hands on them over on{' '}
+                    The easiest way is to get your virtual hands on them over on{' '}
                     <a href="https://store.steampowered.com/app/286160/Tabletop_Simulator/" target="_blank">
                         Tabletop Simulator
                     </a>.

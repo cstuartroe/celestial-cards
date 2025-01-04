@@ -199,6 +199,7 @@ export default class NewCalendar extends Component<{}, NewDate> {
           <div className='row'>
             <div className='col-12'>
               <h1 id='current'>
+                today is{' '}
                 {dayToString(this.state.day)}
                 {'\xa0'}
                 {this.state.year}
@@ -206,9 +207,10 @@ export default class NewCalendar extends Component<{}, NewDate> {
             </div>
             <div className='col-12 explanation'>
               <p style={{textAlign: 'center'}}>
+                <Link to={'/overview'}>back to overview</Link>
+                {' | '}
                 <Link to={'/calendar/explanation'}>explanation</Link>
-              </p>
-              <p style={{textAlign: 'center'}}>
+                {' | '}
                 <Link to={'/calendar/birthday'}>birthday card</Link>
               </p>
             </div>

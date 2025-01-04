@@ -43,6 +43,8 @@ export default class NewCalendarBirthdayViewer extends Component<{}, State> {
                         <div className='col-12 col-sm-10 col-md-8 col-lg-6'>
                             <h2 className='heading'>Find out your birthday card</h2>
                             <p style={{textAlign: 'center'}}>
+                                <Link to={'/overview'}>back to overview</Link>
+                                {' | '}
                                 <Link to={'/calendar'}>see full calendar</Link>
                             </p>
 

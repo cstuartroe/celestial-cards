@@ -129,6 +129,19 @@ export default class Overview extends Component<Props, State> {
                     </span>
                     {' '}section of the menu!
                 </p>
+
+                <h2>What's my birthday card?</h2>
+
+                <p>
+                    Celestial cards are associated with a distinct{' '}
+                    <a href="/calendar">calendar</a> which breaks the year into 60 weeks,
+                    with each of the 60 celestial cards being associated with a calendar week.
+                </p>
+
+                <p>
+                    You can see which card of the deck is associated with your birthday{' '}
+                    <a href="/calendar/birthday">here</a>.
+                </p>
             </>
         );
     }
