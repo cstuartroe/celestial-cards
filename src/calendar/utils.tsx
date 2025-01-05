@@ -58,7 +58,7 @@ export class GregorianDate {
   toString() {
     const {date} = this;
 
-    return `${gregorianWeekdays[date.getUTCDay()]} ${date.getUTCFullYear()} ${gregorianMonths[date.getUTCMonth()]} ${date.getUTCDate()}`;
+    return `${gregorianWeekdays[date.getUTCDay()]} ${gregorianMonths[date.getUTCMonth()]} ${date.getUTCDate()} ${date.getUTCFullYear()}`;
   }
 
   static localToday() {
