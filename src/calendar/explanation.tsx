@@ -3,17 +3,16 @@ import { Link } from "react-router-dom";
 import {
   range,
   NewDate,
+  GregorianDate,
   gregorianDateToNewDate,
   dayToString,
-  addDays,
 } from "./utils";
 
-export default class NewCalendarExplanation extends Component<{}, {}> {
-  dateTable(startDate: Date, days: number, skipCondition: (d: NewDate) => boolean) {
-    return (
+export function   dateTable(startDate: GregorianDate, days: number, skipCondition: (d: NewDate) => boolean) {
+  return (
       <div className='container-fluid'>
         {range(days).map(n => {
-          let date = addDays(startDate, n);
+          let date = startDate.daysAfter(n);
           let newDate = gregorianDateToNewDate(date);
 
           if (skipCondition(newDate)) {
@@ -23,7 +22,7 @@ export default class NewCalendarExplanation extends Component<{}, {}> {
           return <div key={n} className='row' style={{padding: 0}}>
             <div className="col-5 col-md-6">
               <p style={{textAlign: 'right'}}>
-                {date.toDateString()}
+                {date.toString()}
               </p>
             </div>
             <div className="col-7 col-md-6">
@@ -37,9 +36,10 @@ export default class NewCalendarExplanation extends Component<{}, {}> {
         })
         }
       </div>
-    );
-  }
+  );
+}
 
+export default class NewCalendarExplanation extends Component<{}, {}> {
   render() {
     return (
       <div className={'calendar-style'}>
@@ -60,8 +60,8 @@ export default class NewCalendarExplanation extends Component<{}, {}> {
                 written history. Here are the New Years' Days for the current and next five years:
               </p>
 
-              {this.dateTable(
-                addDays(new Date(), -365),
+              {dateTable(
+                GregorianDate.localToday().daysAfter(-366),
                 365*6 + 3,
                 (d) => d.day.season !== -1
               )}
@@ -111,8 +111,8 @@ export default class NewCalendarExplanation extends Component<{}, {}> {
                 Just for ease of reference, here's all days two years in the past and future:
               </p>
 
-              {this.dateTable(
-                addDays(new Date(), -365*2 - 1),
+              {dateTable(
+                  GregorianDate.localToday().daysAfter(-365*2 - 1),
                 365 * 4 + 2,
                 _ => false
               )}

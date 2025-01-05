@@ -18,12 +18,67 @@ function padZeros(n: number): string {
   return out;
 }
 
-function gregorianDateToUTC(date: Date) {
-  return new Date(`${date.getFullYear()}-${padZeros(date.getMonth() + 1)}-${padZeros(date.getDate())}T00:00:00+0000`);
+const gregorianWeekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const gregorianMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+export class GregorianDate {
+  date: Date
+
+  constructor(year: number, month: number, date: number) {
+    // year is full year. month is 0-11. date is 1-31.
+    this.date = new Date(`${year}-${padZeros(month + 1)}-${padZeros(date)}T00:00:00+0000`)
+  }
+
+  getYear() {
+    return this.date.getUTCFullYear();
+  }
+
+  getMonth() {
+    return this.date.getUTCMonth();
+  }
+
+  getDate() {
+    return this.date.getUTCDate();
+  }
+
+  getTime() {
+    return this.date.getTime();
+  }
+
+  daysAfter(days: number) {
+    const out = new GregorianDate(0, 0, 0);
+    out.date.setTime(this.date.getTime() + days*24*60*60*1000)
+    return out;
+  }
+
+  difference(other: GregorianDate) {
+    return (this.getTime() - other.getTime()) / (24*60*60*1000);
+  }
+
+  toString() {
+    const {date} = this;
+
+    return `${gregorianWeekdays[date.getUTCDay()]} ${date.getUTCFullYear()} ${gregorianMonths[date.getUTCMonth()]} ${date.getUTCDate()}`;
+  }
+
+  static localToday() {
+    const now = new Date();
+    return new GregorianDate(now.getFullYear(), now.getMonth(), now.getDate());
+  }
+
+  static UTCToday() {
+    const now = new Date();
+    return new GregorianDate(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  }
 }
 
-export const FIRST_NEW_YEARS_DAY = new Date('1950-03-22T00:00:00+0000');
-const FIRST_YEAR = 5296; // 22 Mar 1916 thru 21 March 1917
+export const NEW_YEARS_DAYS: [GregorianDate, number][] = [
+    [new GregorianDate(1800, 2, 22), 5146],
+    [new GregorianDate(1900, 2, 22), 5246],
+    [new GregorianDate(1950, 2, 21), 5296],
+    [new GregorianDate(1990, 2, 21), 5336],
+    [new GregorianDate(2016, 2, 21), 5362],
+];
 
 
 export type Day = {
@@ -44,16 +99,6 @@ export function dayEq(day1: Day, day2: Day) {
 
 function isLeapYear(year: number) {
   return (year % 4 === 0) && ((year % 100 !== 0) || (year % 1000 === 0));
-}
-
-export function addDays(date: Date, days: number) {
-  let result = new Date(date);
-  result.setDate(result.getDate() + days);
-  return result;
-}
-
-function daysAfter(date1: Date, date2: Date) {
-  return Math.floor((date1.getTime() - date2.getTime())/(1000*60*60*24));
 }
 
 function dayOfYear(days: number, leapYear: boolean): Day {
@@ -86,21 +131,25 @@ export type NewDate = {
   year: number,
 }
 
-export function gregorianDateToNewDate(date: Date): NewDate {
-  let nyd = FIRST_NEW_YEARS_DAY, year = FIRST_YEAR;
-  date = gregorianDateToUTC(date);
+export function gregorianDateToNewDate(date: GregorianDate): NewDate {
+  let i = NEW_YEARS_DAYS.length - 1;
+  while (NEW_YEARS_DAYS[i][0].getTime() > date.getTime()) {
+    i--;
+  }
+
+  let [nyd, year] = NEW_YEARS_DAYS[i];
 
   while (true) {
-    let next_nyd = addDays(nyd, 365);
+    let next_nyd = nyd.daysAfter(365);
 
     if (isLeapYear(year)) {
-      next_nyd = addDays(next_nyd, 1);
+      next_nyd = next_nyd.daysAfter(1);
     }
 
-    if (next_nyd > date) {
+    if (next_nyd.getTime() > date.getTime()) {
       return {
         year: year,
-        day: dayOfYear(daysAfter(date, nyd), isLeapYear(year))
+        day: dayOfYear(date.difference(nyd), isLeapYear(year))
       };
     } else {
       nyd = next_nyd;

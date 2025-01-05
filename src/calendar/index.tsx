@@ -13,7 +13,7 @@ import {
   CELESTIAL_BODIES,
   gregorianDateToNewDate,
   dayToString,
-  dayEq,
+  dayEq, GregorianDate,
 } from "./utils";
 
 const MONTH_SYMBOLS = ['♈︎', '♉︎', '♊︎', '♋︎', '♌︎', '♍︎', '♎︎', '♏︎', '♐︎', '♑︎', '♒︎', '♓︎'];
@@ -154,7 +154,7 @@ export default class NewCalendar extends Component<{}, NewDate> {
       return;
     }
 
-    this.setState(gregorianDateToNewDate(new Date()));
+    this.setState(gregorianDateToNewDate(GregorianDate.localToday()));
     setTimeout(this.updateTime.bind(this), 1000);
   }
 

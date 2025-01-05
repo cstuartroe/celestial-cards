@@ -2,7 +2,8 @@ import React, {Component} from "react";
 import {Link} from "react-router-dom";
 
 
-import {gregorianDateToNewDate, dayToString, dayToCard} from "./utils";
+import {gregorianDateToNewDate, dayToString, dayToCard, GregorianDate, dayEq} from "./utils";
+import {dateTable} from "./explanation";
 
 
 type State = {
@@ -20,7 +21,8 @@ export default class NewCalendarBirthdayViewer extends Component<{}, State> {
     }
 
     dateDisplay() {
-        const date = new Date(this.state.date + "T00:00:00");
+        const datetime = new Date(this.state.date + "T00:00:00+0000");
+        const date = new GregorianDate(datetime.getUTCFullYear(), datetime.getUTCMonth(), datetime.getUTCDate());
         const newDate = gregorianDateToNewDate(date);
         const dateString = `${dayToString(newDate.day)} ${newDate.year}`;
 
@@ -30,6 +32,12 @@ export default class NewCalendarBirthdayViewer extends Component<{}, State> {
                     {dateString}
                 </p>
                 {dayToCard(newDate.day)}
+                <p>These are all your celestial birthdays up to your 100th:</p>
+                {dateTable(
+                    date,
+                    365.25*100 + 10,
+                    d => !dayEq(d.day, newDate.day),
+                )}
             </>
         );
     }
@@ -55,8 +63,8 @@ export default class NewCalendarBirthdayViewer extends Component<{}, State> {
                                 which card is your birthday card.
                             </p>
 
-                            <input type="date" id="start" name="trip-start" value={this.state.date} min="1951-01-01"
-                                   max="2050-12-31"
+                            <input type="date" id="start" name="trip-start" value={this.state.date} min="1801-01-01"
+                                   max="2300-12-31"
                                    style={{marginTop: "2vh"}}
                                    onChange={e => this.setState({
                                        date: e.target.value,
