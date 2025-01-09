@@ -8,15 +8,14 @@ import {dateTable} from "./explanation";
 
 type State = {
     date: string,
-    updated: boolean,
 }
 
 export default class NewCalendarBirthdayViewer extends Component<{}, State> {
     constructor(props: {}) {
         super(props);
+        const q = new URLSearchParams(window.location.search);
         this.state = {
-            date: "2000-01-01",
-            updated: false,
+            date: q.get("date") || "2000-01-01",
         };
     }
 
@@ -42,7 +41,17 @@ export default class NewCalendarBirthdayViewer extends Component<{}, State> {
         );
     }
 
+    setDate(date: string) {
+        const url = new URL(window.location.href);
+        url.searchParams.set("date", date);
+        window.history.pushState(null, "", url.href);
+
+        this.setState({date});
+    }
+
     render() {
+        const q = new URLSearchParams(window.location.search);
+
         return (
             <div className={'calendar-style'}>
                 <div className='container-fluid explanation'>
@@ -66,12 +75,9 @@ export default class NewCalendarBirthdayViewer extends Component<{}, State> {
                             <input type="date" id="start" name="trip-start" value={this.state.date} min="1801-01-01"
                                    max="2300-12-31"
                                    style={{marginTop: "2vh"}}
-                                   onChange={e => this.setState({
-                                       date: e.target.value,
-                                       updated: true,
-                                   })} />
+                                   onChange={e => this.setDate(e.target.value)} />
 
-                            {this.state.updated && this.dateDisplay()}
+                            {q.get("date") && this.dateDisplay()}
                         </div>
                     </div>
                 </div>
