@@ -4,6 +4,7 @@ import {Link} from "react-router-dom";
 
 import {gregorianDateToNewDate, dayToString, dayToCard, GregorianDate, dayEq} from "./utils";
 import {dateTable} from "./explanation";
+import CardImage from "../Card";
 
 
 type State = {
@@ -30,7 +31,7 @@ export default class NewCalendarBirthdayViewer extends Component<{}, State> {
                 <p style={{textAlign: 'center'}}>
                     {dateString}
                 </p>
-                {dayToCard(newDate.day)}
+                <CardImage {...dayToCard(newDate.day)} bigger/>
                 <p>These are all your celestial birthdays up to your 100th:</p>
                 {dateTable(
                     date,

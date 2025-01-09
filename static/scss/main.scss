@@ -160,6 +160,12 @@ ul {
     margin: auto;
     border-radius: calc(.25vw + .5vh);
   }
+
+  &.bigger img {
+    width: calc(6vw + 8vh);
+    margin: auto;
+    border-radius: calc(.5vw + 1vh);
+  }
 }
 
 .calendar-style {

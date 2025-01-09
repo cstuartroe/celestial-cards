@@ -1,4 +1,4 @@
-import Card, {SEASONS, Count} from "../Card";
+import {SEASONS, Count, Card} from "../Card";
 
 export const range = (n: number) => Array.from(Array(n).keys());
 
@@ -171,15 +171,15 @@ export function dayToString(day: Day) {
   }
 }
 
-export function dayToCard(day: Day) {
+export function dayToCard(day: Day): Card {
   if (day.season === -1) {
-    return <Card season={"spring"} count={1} shape={"moon"}/>;
+    return {season: "spring", count: 1, shape: "moon"};
   } else if (day.season === -2) {
-    return <Card season={"autumn"} count={1} shape={"moon"}/>;
+    return {season: "autumn", count: 1, shape: "moon"};
   } else if (day.month === -1) {
-    return <Card season={SEASONS[day.season].toLowerCase() as any} count={1} shape={"moon"}/>;
+    return {season: SEASONS[day.season], count: 1, shape: "moon"};
   } else {
     const count = Math.floor(day.date/6) + 1 as Count
-    return <Card season={SEASONS[day.season]} count={count} shape={CELESTIAL_BODIES[day.month]}/>;
+    return {season: SEASONS[day.season], count: count, shape: CELESTIAL_BODIES[day.month]};
   }
 }
