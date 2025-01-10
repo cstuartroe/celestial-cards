@@ -168,6 +168,8 @@ ul {
   }
 }
 
+$day_square_size: calc(2vw + 3vh);
+
 .calendar-style {
   text-align: center;
 
@@ -221,46 +223,73 @@ ul {
     display: inline-block;
   }
 
-  .month tr th div {
-    height: calc(2vw + 3vh);
-    width: calc(2vw + 3vh);
-    border-radius: calc(2vw + 3vh);
-    text-align: center;
-    margin: 2px;
-    display: table;
-  }
-
-  .month tr th div p {
-    font-size: calc(1vw + 2vh);
-    font-family: "Domine", serif;
-    margin: 0;
-    margin-top: calc(.55vh + .3vw);
-    padding-top: 0;
-  }
-
   svg[data-prefix='fas'] {
     font-size: calc(1.5vw + 2vh);
     //margin-top: .4vh;
   }
 
-  .weekend {
-    background-color: $cream;
-  }
+  .day-square {
+    height: $day_square_size;
+    width: $day_square_size;
+    border-radius: calc(2vw + 3vh);
+    text-align: center;
+    margin: 2px;
+    display: table;
 
-  .weekend p {
-    color: $dark_blue;
-  }
+    p {
+      font-size: calc(1vw + 2vh);
+      font-family: "Domine", serif;
+      margin: 0;
+      margin-top: calc(.55vh + .3vw);
+      padding-top: 0;
+    }
 
-  .weekday {
-    background-color: $dark_blue;
-  }
+    &.weekend {
+      background-color: $cream;
 
-  .weekday p, .activeDay p {
-    color: $cream;
-  }
+      p {
+        color: $dark_blue;
+      }
+    }
 
-  .activeDay {
-    background-color: #9988ff !important;
+    &.weekday {
+      background-color: $dark_blue;
+
+      p {
+        color: $cream;
+      }
+    }
+
+    &.activeDay {
+      background-color: #9988ff !important;
+
+      p {
+        color: $cream;
+      }
+    }
+
+    position: relative;
+
+    .date-tooltip {
+      position: absolute;
+      display: none;
+      width: 20vw;
+      background-color: $cream;
+      border-radius: 10px;
+      bottom: calc($day_square_size + 1vh);
+      z-index: 1;
+      margin-left: calc(-10vw + .5*$day_square_size);
+      border: $invisible-border;
+
+      p {
+        font-size: calc(.75vw + 1.5vh);
+        color: $dark_blue;
+      }
+    }
+
+    &:hover .date-tooltip {
+      display: block;
+    }
   }
 
   #new-year {

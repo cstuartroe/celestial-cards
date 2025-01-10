@@ -45,6 +45,10 @@ export class GregorianDate {
     return this.date.getTime();
   }
 
+  getISO() {
+    return `${this.getYear()}-${padZeros(this.getMonth() + 1)}-${padZeros(this.getDate())}`;
+  }
+
   daysAfter(days: number) {
     const out = new GregorianDate(0, 0, 0);
     out.date.setTime(this.date.getTime() + days*24*60*60*1000)
@@ -156,6 +160,19 @@ export function gregorianDateToNewDate(date: GregorianDate): NewDate {
       year++;
     }
   }
+}
+
+export function newDateToGregorianDate(date: NewDate): GregorianDate {
+  let out: GregorianDate = new GregorianDate(date.year - 3346, 2, 18);
+  out = out.daysAfter(91*date.day.season);
+  out = out.daysAfter(30*date.day.month);
+  out = out.daysAfter(date.day.date);
+
+  while (!dayEq(gregorianDateToNewDate(out).day, date.day)) {
+    out = out.daysAfter(1);
+  }
+
+  return out;
 }
 
 export function dayToString(day: Day) {

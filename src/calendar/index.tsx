@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+// import {Navigate} from "react-router-dom";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCloud, faSun, faLeaf, faSnowflake, faGlassCheers, faFrog } from "@fortawesome/free-solid-svg-icons";
@@ -13,7 +14,7 @@ import {
   CELESTIAL_BODIES,
   gregorianDateToNewDate,
   dayToString,
-  dayEq, GregorianDate,
+  dayEq, GregorianDate, newDateToGregorianDate,
 } from "./utils";
 
 const MONTH_SYMBOLS = ['♈︎', '♉︎', '♊︎', '♋︎', '♌︎', '♍︎', '♎︎', '♏︎', '♐︎', '♑︎', '♒︎', '♓︎'];
@@ -35,6 +36,8 @@ function CelestialImage(body: number, count: number) {
   ;
 }
 
+let blah = 0;
+
 function DaySquare(props: { day: Day, currentDay: Day }) {
   let { day, currentDay } = props;
 
@@ -47,6 +50,8 @@ function DaySquare(props: { day: Day, currentDay: Day }) {
     className += ' activeDay';
   }
 
+  className += " day-square";
+
   let content: string | JSX.Element = (day.date + 1).toString();
   if (day.season === -1) {
     content = <FontAwesomeIcon icon={faGlassCheers}/>;
@@ -56,19 +61,43 @@ function DaySquare(props: { day: Day, currentDay: Day }) {
     content = <FontAwesomeIcon icon={SEASON_ICONS[day.season]}/>;
   }
 
+  const currentYear = gregorianDateToNewDate(GregorianDate.localToday()).year;
+  const days = [-1, 0, 1].map(yearsAdjust => newDateToGregorianDate({
+    year: currentYear + yearsAdjust,
+    day,
+  }));
+
   return (
-    <div className={className}>
-      <p>{content}</p>
-    </div>
+      <div
+          className={className}
+          style={{cursor: "pointer"}}
+          onClick={() => {
+            let earlyGregorianDate = newDateToGregorianDate({
+              day,
+              year: 5300,
+            });
+
+            window.open(`/calendar/birthday?date=${earlyGregorianDate.getISO()}`, '_blank');
+          }}
+      >
+        <div className="date-tooltip">
+          {days.map((d, i) => (
+              <p key={i}>
+                {d.toString()}
+              </p>
+          ))}
+        </div>
+        <p>{content}</p>
+      </div>
   );
 }
 
-function Month(props: {season: number, month: number, currentDay: Day}) {
-  let { season, month, currentDay } = props;
+function Month(props: { season: number, month: number, currentDay: Day }) {
+  let {season, month, currentDay} = props;
 
   return (
-    <table className="month">
-      <tbody>
+      <table className="month">
+        <tbody>
         {range(5).map(w => (
           <tr key={w} className="d-flex flex-row">
             {CelestialImage(month % 3, w + 1)}
@@ -118,14 +147,6 @@ function Season(props: SeasonProps) {
       </div>
     </div>
   );
-}
-
-function lpad(s: string, width: number, padding: string) {
-  while (s.length < width) {
-    s = padding + s;
-  }
-
-  return s;
 }
 
 export default class NewCalendar extends Component<{}, NewDate> {
