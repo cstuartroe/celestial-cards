@@ -87,6 +87,14 @@ export default class NewCalendarExplanation extends Component<{}, {}> {
                 is inserted halfway through the year, just before the second equinox.
               </p>
 
+              <p>
+                I've also marked <a href="https://en.wikipedia.org/wiki/Quarter_days#In_Ireland">quarter days</a>{' '}
+                on the 12th day of the second month of every season, labeling them with the Irish names. I've
+                used the 12th rather than the exact middle of the season in order to line up more with traditionally
+                used dates on the Gregorian calendar (although they still don't line up exactly, especially Beltane),
+                and so that the holidays fall on a weekend day.
+              </p>
+
               <h3>Month names</h3>
 
               <p>
@@ -103,6 +111,10 @@ export default class NewCalendarExplanation extends Component<{}, {}> {
                 The 30-day months are split into five 6-day weeks. The weekdays are named after the five classical
                 planets, plus "Sky"; the weekday names in order are:
                 Skyday, Marsday, Mercuryday, Jupiterday, Venusday, Saturnday.
+              </p>
+
+              <p>
+                Skyday and Saturnday are marked as the weekend days.
               </p>
 
               <h3>Extended calendar</h3>

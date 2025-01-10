@@ -6,6 +6,9 @@ $summer_gold: #dbb448;
 $autumn_red: #994936;
 $winter_blue: #343445;
 
+$lavender: #9988ff;
+$fire_orange: #d97736;
+
 $border_thickness: 2px;
 $border: $border_thickness solid white;
 $invisible_border: $border_thickness solid $dark_blue;
@@ -224,28 +227,29 @@ $day_square_size: calc(2vw + 3vh);
   }
 
   svg[data-prefix='fas'] {
-    font-size: calc(1.5vw + 2vh);
+    font-size: calc(1.2vw + 1.6vh);
     //margin-top: .4vh;
   }
 
   .day-square {
     height: $day_square_size;
     width: $day_square_size;
-    border-radius: calc(2vw + 3vh);
+    border-radius: 40%;
+    border: $border;
     text-align: center;
     margin: 2px;
-    display: table;
 
     p {
-      font-size: calc(1vw + 2vh);
+      font-size: calc(.9vw + 1.8vh);
       font-family: "Domine", serif;
       margin: 0;
-      margin-top: calc(.55vh + .3vw);
+      margin-top: calc(.4vh + .4vw);
       padding-top: 0;
     }
 
     &.weekend {
       background-color: $cream;
+      border-color: $dark_blue;
 
       p {
         color: $dark_blue;
@@ -254,6 +258,7 @@ $day_square_size: calc(2vw + 3vh);
 
     &.weekday {
       background-color: $dark_blue;
+      border-color: $cream;
 
       p {
         color: $cream;
@@ -261,7 +266,17 @@ $day_square_size: calc(2vw + 3vh);
     }
 
     &.activeDay {
-      background-color: #9988ff !important;
+      background-color: $lavender;
+      border-color: $cream;
+
+      p {
+        color: $cream;
+      }
+    }
+
+    &.holiday {
+      background-color: $fire_orange;
+      border-color: $cream;
 
       p {
         color: $cream;
@@ -273,17 +288,23 @@ $day_square_size: calc(2vw + 3vh);
     .date-tooltip {
       position: absolute;
       display: none;
-      width: 20vw;
+      width: calc(8vw + 16vh);
       background-color: $cream;
       border-radius: 10px;
       bottom: calc($day_square_size + 1vh);
       z-index: 1;
-      margin-left: calc(-10vw + .5*$day_square_size);
+      margin-left: calc(-4vw - 8vh + .5*$day_square_size);
       border: $invisible-border;
 
       p {
         font-size: calc(.75vw + 1.5vh);
         color: $dark_blue;
+
+        &.holiday-name {
+          color: $fire_orange;
+          background-color: $dark_blue;
+          margin-top: 0;
+        }
       }
     }
 

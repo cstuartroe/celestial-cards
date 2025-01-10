@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-// import {Navigate} from "react-router-dom";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCloud, faSun, faLeaf, faSnowflake, faGlassCheers, faFrog } from "@fortawesome/free-solid-svg-icons";
@@ -9,12 +8,15 @@ import {
   Day,
   NewDate,
   WEEKEND_DAYS,
-  HOLIDAYS,
+  FIRST_DAYS,
   MONTHS,
   CELESTIAL_BODIES,
   gregorianDateToNewDate,
+  dayName,
   dayToString,
-  dayEq, GregorianDate, newDateToGregorianDate,
+  dayEq,
+  GregorianDate,
+  newDateToGregorianDate,
 } from "./utils";
 
 const MONTH_SYMBOLS = ['♈︎', '♉︎', '♊︎', '♋︎', '♌︎', '♍︎', '♎︎', '♏︎', '♐︎', '♑︎', '♒︎', '♓︎'];
@@ -32,22 +34,21 @@ function CelestialImage(body: number, count: number) {
               alt={`${count} ${CELESTIAL_BODIES[body]}s`}
           />
       </th>
-)
-  ;
+  );
 }
-
-let blah = 0;
 
 function DaySquare(props: { day: Day, currentDay: Day }) {
   let { day, currentDay } = props;
 
-  let className = "weekday";
-  if (day.season === -1 || day.month === -1 || WEEKEND_DAYS.includes(day.date % 6)) {
-    className = "weekend";
-  }
+  const name = dayName(day);
 
+  let className = "weekday";
   if (dayEq(day, currentDay)) {
-    className += ' activeDay';
+    className = 'activeDay';
+  } else if (name !== null) {
+    className = "holiday"
+  } else if (day.season === -1 || day.month === -1 || WEEKEND_DAYS.includes(day.date % 6)) {
+    className = "weekend";
   }
 
   className += " day-square";
@@ -62,7 +63,11 @@ function DaySquare(props: { day: Day, currentDay: Day }) {
   }
 
   const currentYear = gregorianDateToNewDate(GregorianDate.localToday()).year;
-  const days = [-1, 0, 1].map(yearsAdjust => newDateToGregorianDate({
+  let yearAdjusts = [-1, 0, 1];
+  if (day.season === -2) {
+    yearAdjusts = [-4, 0, 4];
+  }
+  const days = yearAdjusts.map(yearsAdjust => newDateToGregorianDate({
     year: currentYear + yearsAdjust,
     day,
   }));
@@ -81,6 +86,7 @@ function DaySquare(props: { day: Day, currentDay: Day }) {
           }}
       >
         <div className="date-tooltip">
+          {name && <p className="holiday-name">{name}</p>}
           {days.map((d, i) => (
               <p key={i}>
                 {d.toString()}
@@ -128,7 +134,7 @@ function Season(props: SeasonProps) {
         backgroundImage: `url(/static/img/blank_${SEASONS[index]}.png)`,
         backgroundSize: 'contain',
       }}>
-        <h2>{HOLIDAYS[index]}</h2>
+        <h2>{FIRST_DAYS[index]}</h2>
         <table className='month'>
           <tbody>
             <tr>
@@ -176,7 +182,7 @@ export default class NewCalendar extends Component<{}, NewDate> {
     }
 
     this.setState(gregorianDateToNewDate(GregorianDate.localToday()));
-    setTimeout(this.updateTime.bind(this), 1000);
+    setTimeout(this.updateTime.bind(this), 5000);
   }
 
   specialDay(season: number) {

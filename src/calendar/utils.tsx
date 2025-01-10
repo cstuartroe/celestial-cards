@@ -3,7 +3,8 @@ import {SEASONS, Count, Card} from "../Card";
 export const range = (n: number) => Array.from(Array(n).keys());
 
 export const WEEKDAYS = ['Skyday','Marsday','Mercuryday','Jupiterday','Venusday','Saturnday'];
-export const HOLIDAYS = ['Spring Equinox','Summer Solstice','Autumn Equinox','Winter Solstice',];
+export const FIRST_DAYS = ['Spring Equinox','Summer Solstice','Autumn Equinox','Winter Solstice',];
+export const MIDSEASON_DAYS = ["Beltane", "Lunasa", "Samhain", "Imbolc"];
 export const MONTHS = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
   "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
 export const CELESTIAL_BODIES = ["moon", "sun", "star"] as const;
@@ -164,7 +165,9 @@ export function gregorianDateToNewDate(date: GregorianDate): NewDate {
 
 export function newDateToGregorianDate(date: NewDate): GregorianDate {
   let out: GregorianDate = new GregorianDate(date.year - 3346, 2, 18);
-  out = out.daysAfter(91*date.day.season);
+  if (date.day.season > 0) {
+    out = out.daysAfter(91 * date.day.season);
+  }
   out = out.daysAfter(30*date.day.month);
   out = out.daysAfter(date.day.date);
 
@@ -175,17 +178,34 @@ export function newDateToGregorianDate(date: NewDate): GregorianDate {
   return out;
 }
 
-export function dayToString(day: Day) {
+export function dayName(day: Day): string | null {
   if (day.season === -1) {
     return "New Years' Day";
-  } else if (day.season === -2) {
-    return "Leap Day";
-  } else if (day.month === -1) {
-    return HOLIDAYS[day.season];
-  } else {
-    return WEEKDAYS[day.date % 6] + " " + (day.date + 1).toString() + "\xa0"
-      + MONTHS[day.season*3 + day.month];
   }
+
+  if (day.season === -2) {
+    return "Leap Day";
+  }
+
+  if (day.month === -1) {
+    return FIRST_DAYS[day.season];
+  }
+
+  if (day.month === 1 && day.date === 11) {
+    return MIDSEASON_DAYS[day.season];
+  }
+
+  return null;
+}
+
+export function dayToString(day: Day) {
+  const name = dayName(day);
+  if (name !== null) {
+    return name;
+  }
+
+  return WEEKDAYS[day.date % 6] + " " + (day.date + 1).toString() + "\xa0"
+    + MONTHS[day.season*3 + day.month];
 }
 
 export function dayToCard(day: Day): Card {
