@@ -70,8 +70,8 @@ export default class NewCalendarExplanation extends Component<{}, {}> {
 
               <p>
                 The year is broken into the four standard seasons, each of which begins with an equinox or
-                solstice. This calendar is labeled and aligned according to the seasons of the temperate
-                northern hemisphere for simplicity, while acknowledging that this does not describe
+                solstice. This calendar is labeled and aligned explicitly according to the seasons of the
+                temperate northern hemisphere, while acknowledging that this does not describe
                 climate patterns in other parts of the world.
               </p>
 
@@ -88,8 +88,9 @@ export default class NewCalendarExplanation extends Component<{}, {}> {
               </p>
 
               <p>
-                I've also marked <a href="https://en.wikipedia.org/wiki/Quarter_days#In_Ireland">quarter days</a>{' '}
-                on the 12th day of the second month of every season, labeling them with the Irish names. I've
+                I've also marked{' '}
+                <a href="https://en.wikipedia.org/wiki/Quarter_days#In_Ireland" target="_blank">quarter days</a>
+                {' '}on the 12th day of the second month of every season, labeling them with the Irish names. I've
                 used the 12th rather than the exact middle of the season in order to line up more with traditionally
                 used dates on the Gregorian calendar (although they still don't line up exactly, especially Beltane),
                 and so that the holidays fall on a weekend day.
@@ -105,12 +106,29 @@ export default class NewCalendarExplanation extends Component<{}, {}> {
                 based on Western astrology.
               </p>
 
+              <p>
+                Within each season, each of the three months is associated with a different celestial shape:
+                sun, moon, or star. The month associated with the sun is the one closest to the longest day
+                of the year. Stars, being only visible at night, are associated with the shortest day of the year,
+                and thus are opposite the sun month. The moon can appear both during the day and at night and
+                moves independently of the sun, and thus the middle month of each season is associated with
+                the moon.
+              </p>
+
               <h3>The week</h3>
 
               <p>
                 The 30-day months are split into five 6-day weeks. The weekdays are named after the five classical
                 planets, plus "Sky"; the weekday names in order are:
                 Skyday, Marsday, Mercuryday, Jupiterday, Venusday, Saturnday.
+              </p>
+
+              <p>
+                The planets in that order - Mars, Mercury, Jupiter, Venus, and Saturn - are associated with the
+                days Tuesday through Saturday in traditional European, South Asian, and East Asian calendars,
+                so I'm merely preserving that order. "Skyday" can be though of as a merger of Sunday and Monday,
+                and its name is inspired by the Chinese term{' '}
+                <a href="https://en.wiktionary.org/wiki/%E9%80%B1%E5%A4%A9#Chinese">週天</a>.
               </p>
 
               <p>

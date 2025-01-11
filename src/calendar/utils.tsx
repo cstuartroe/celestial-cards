@@ -9,6 +9,15 @@ export const MONTHS = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
   "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
 export const CELESTIAL_BODIES = ["moon", "sun", "star"] as const;
 
+export type Body = (typeof CELESTIAL_BODIES)[number];
+
+export const BODY_ORDER_BY_SEASON: Body[][] = [
+  ["star", "moon", "sun"],
+  ["sun", "moon", "star"],
+  ["sun", "moon", "star"],
+  ["star", "moon", "sun"],
+]
+
 export const WEEKEND_DAYS = [0, 5];
 
 function padZeros(n: number): string {
@@ -210,13 +219,13 @@ export function dayToString(day: Day) {
 
 export function dayToCard(day: Day): Card {
   if (day.season === -1) {
-    return {season: "spring", count: 1, shape: "moon"};
+    return {season: "spring", count: 1, shape: "star"};
   } else if (day.season === -2) {
-    return {season: "autumn", count: 1, shape: "moon"};
+    return {season: "autumn", count: 1, shape: "sun"};
   } else if (day.month === -1) {
-    return {season: SEASONS[day.season], count: 1, shape: "moon"};
+    return {season: SEASONS[day.season], count: 1, shape: BODY_ORDER_BY_SEASON[day.season][0]};
   } else {
     const count = Math.floor(day.date/6) + 1 as Count
-    return {season: SEASONS[day.season], count: count, shape: CELESTIAL_BODIES[day.month]};
+    return {season: SEASONS[day.season], count: count, shape: BODY_ORDER_BY_SEASON[day.season][day.month]};
   }
 }

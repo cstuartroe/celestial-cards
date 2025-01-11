@@ -17,21 +17,23 @@ import {
   dayEq,
   GregorianDate,
   newDateToGregorianDate,
+  Body,
+  BODY_ORDER_BY_SEASON,
 } from "./utils";
 
 const MONTH_SYMBOLS = ['♈︎', '♉︎', '♊︎', '♋︎', '♌︎', '♍︎', '♎︎', '♏︎', '♐︎', '♑︎', '♒︎', '♓︎'];
 const SEASON_ICONS = [faCloud, faSun, faLeaf, faSnowflake];
 
-function CelestialImage(body: number, count: number) {
+function CelestialImage(body: Body, count: number) {
   return (
       <th className="flex-fill">
           <img
-              src={`/static/img/blank_${count}_${CELESTIAL_BODIES[body]}s.png`}
+              src={`/static/img/blank_${count}_${body}s.png`}
               style={{
                 width: "calc(2vw + 3vh)",
                 margin: "2px",
               }}
-              alt={`${count} ${CELESTIAL_BODIES[body]}s`}
+              alt={`${count} ${body}s`}
           />
       </th>
   );
@@ -100,19 +102,20 @@ function DaySquare(props: { day: Day, currentDay: Day }) {
 
 function Month(props: { season: number, month: number, currentDay: Day }) {
   let {season, month, currentDay} = props;
+  const body = BODY_ORDER_BY_SEASON[season][month % 3];
 
   return (
       <table className="month">
         <tbody>
         {range(5).map(w => (
           <tr key={w} className="d-flex flex-row">
-            {CelestialImage(month % 3, w + 1)}
+            {CelestialImage(body, w + 1)}
             {range(6).map(d => (
               <th key={d} className="flex-fill">
                 <DaySquare day={{date: w*6 + d, season, month}} currentDay={currentDay}/>
               </th>
             ))}
-            {CelestialImage(month % 3, w + 1)}
+            {CelestialImage(body, w + 1)}
           </tr>
         ))}
       </tbody>
