@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import Card, {CardProps, Shape} from "../Card";
 
-type CardGridIcon = "right_arrow";
+type CardGridIcon = "right_arrow" | "left_arrow";
 
 type CardGridCell = CardProps | null | CardGridIcon;
 
@@ -28,6 +28,7 @@ function CardGrid(props: { rows: (CardGridCell)[][] }) {
                                 </div>
                             );
                         case "right_arrow":
+                        case "left_arrow":
                             return (
                                 <div className="celestial-card">
                                     <img src={`/static/img/${cell}.png`} alt={cell}/>
@@ -390,7 +391,7 @@ export default class Tensor extends Component<Props, State> {
                     ],
                 ]}/>
 
-                <h3>Taking a card</h3>
+                <h3>Taking a card: draw or steal?</h3>
 
                 <p>
                     After placing a card, a player takes one card to finish their turn, restoring the size of their hand
@@ -403,10 +404,124 @@ export default class Tensor extends Component<Props, State> {
                 </p>
 
                 <p>
-                    However, the player can instead choose to steal a card from another player.
-                    A card may only be stolen if it is <b>alone</b>. Once a card is in a group with one or more other
-                    cards, it is ineligible to be stolen. The stealing player incorporates the stolen card into their
+                    However, the player can instead choose to <b>steal</b> a card from another player.
+                    The stealing player incorporates the stolen card into their
                     hand just like a normally drawn card; they cannot place the stolen card in the same turn.
+                </p>
+
+                <p>
+                    Not just any card may be stolen, though. A card maybe be stolen under two circumstances:
+                </p>
+
+                <ul>
+                    <li>The card is alone, not in a complete or incomplete tensor with other cards, or</li>
+                    <li>
+                        The card is part of an incomplete tensor, <i>and</i> the removal of the card does not
+                        divide the incomplete tensor into two disjoint pieces.
+                    </li>
+                </ul>
+
+                <p>
+                    Let's look at some examples of that second case...
+                </p>
+
+                <p>
+                    This tensor is just not eligible to be stolen from, since it is complete:
+                </p>
+
+                <CardGrid rows={[
+                    [
+                        [1, 'summer', 'sun'],
+                        [5, 'summer', 'sun'],
+                    ],
+                ]}/>
+
+                <p>
+                    But supposing it had another card added to it, like below. Now either of the edge cards
+                    can be stolen:
+                </p>
+
+                <CardGrid rows={[
+                    [
+                        "left_arrow",
+                        [1, 'summer', 'sun'],
+                        [5, 'summer', 'sun'],
+                        null,
+                    ],
+                    [
+                        null,
+                        null,
+                        [5, 'winter', 'sun'],
+                        "right_arrow",
+                    ],
+                ]}/>
+
+                <p>
+                    Note that doing so results in this case in a complete tensor, from which more cards cannot be
+                    stolen. For instance, if the five blue suns card is stolen from this tensor, then the remaining
+                    two form the complete two-card tensor above.
+                </p>
+
+                <p>
+                    However, for this incomplete three-card tensor, the theft of the middle card (as shown below)
+                    is invalid.
+                </p>
+
+                <CardGrid rows={[
+                    [
+                        null,
+                        [1, 'summer', 'sun'],
+                        [5, 'summer', 'sun'],
+                        "right_arrow",
+                    ],
+                    [
+                        null,
+                        null,
+                        [5, 'winter', 'sun'],
+                        null,
+                    ],
+                ]}/>
+
+                <p>
+                    This is because doing so splits the incomplete tensor into two separate pieces:
+                </p>
+
+                <CardGrid rows={[
+                    [
+                        null,
+                        [1, 'summer', 'sun'],
+                        null,
+                        null,
+                    ],
+                    [
+                        null,
+                        null,
+                        [5, 'winter', 'sun'],
+                        null,
+                    ],
+                ]}/>
+
+                <p>
+                    Here's one more example. For this incomplete tensor, any of the cards may be stolen, as none of
+                    them is the only link between the rest of the cards in the tensor!
+                </p>
+
+                <CardGrid rows={[
+                    [
+                        null,
+                        [3, 'summer', 'moon'],
+                        [3, 'autumn', 'moon'],
+                    ],
+                    [
+                        [3, 'spring', 'star'],
+                        [3, 'summer', 'star'],
+                        [3, 'autumn', 'star'],
+                    ],
+                ]}/>
+
+                <p>
+                    Of course, if multiple cards were stolen from it, it would eventually become a complete two-
+                    or three-card tensor immune to further stealing.
                 </p>
 
                 <h3>Stealing and extra turns</h3>
