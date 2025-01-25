@@ -63,7 +63,7 @@ export default class NewCalendarExplanation extends Component<{}, {}> {
               {dateTable(
                 GregorianDate.localToday().daysAfter(-366),
                 365*6 + 3,
-                (d) => d.day.season !== -1
+                (d) => d.day.quarter !== -1
               )}
 
               <h3>Seasons and special days</h3>

@@ -2,41 +2,73 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCloud, faSun, faLeaf, faSnowflake, faGlassCheers, faFrog } from "@fortawesome/free-solid-svg-icons";
-import {SEASONS} from "../Card";
+import {Season, SEASONS} from "../Card";
 import {
   range,
   Day,
   NewDate,
-  WEEKEND_DAYS,
   FIRST_DAYS,
   MONTHS,
-  CELESTIAL_BODIES,
   gregorianDateToNewDate,
   dayName,
   dayToString,
   dayEq,
   GregorianDate,
-  newDateToGregorianDate,
-  Body,
-  BODY_ORDER_BY_SEASON,
+  newDateToGregorianDate, isLeapYear,
 } from "./utils";
+import classNames from "classnames";
 
 const MONTH_SYMBOLS = ['♈︎', '♉︎', '♊︎', '♋︎', '♌︎', '♍︎', '♎︎', '♏︎', '♐︎', '♑︎', '♒︎', '♓︎'];
 const SEASON_ICONS = [faCloud, faSun, faLeaf, faSnowflake];
+const ORDINALS = [<span>1<sup>st</sup></span>, <span>2<sup>nd</sup></span>];
 
-function CelestialImage(body: Body, count: number) {
-  return (
-      <th className="flex-fill">
-          <img
-              src={`/static/img/blank_${count}_${body}s.png`}
-              style={{
-                width: "calc(2vw + 3vh)",
-                margin: "2px",
-              }}
-              alt={`${count} ${body}s`}
-          />
-      </th>
-  );
+type CalendarColor = Season | "white" | "black";
+
+type CalendarElement = {
+  season: CalendarColor,
+  jsx: JSX.Element,
+}
+
+function seasonStyle(season: CalendarColor) {
+  if (SEASONS.includes(season as Season)) {
+    return {
+      backgroundImage: `url(/static/img/blank_${season}.png)`,
+      backgroundSize: 'contain',
+    };
+  }
+
+  return {};
+}
+
+function renderCalendarElements(elements: CalendarElement[]) {
+  const elementGroups: {
+    season: CalendarColor,
+    elements: JSX.Element[],
+  }[] = [];
+
+  elements.forEach(element => {
+    if (elementGroups.length === 0 || element.season !== elementGroups[elementGroups.length - 1].season) {
+      elementGroups.push({elements: [], season: element.season});
+    }
+    elementGroups[elementGroups.length - 1].elements.push(element.jsx);
+  });
+
+  return elementGroups.map((group, i) => (
+      <div
+          key={i}
+          style={seasonStyle(group.season)}
+          className={classNames(
+              "col-12", "calendar-section", `season-${group.season}`,
+              {first: i === 0, last: i === elementGroups.length - 1},
+          )}
+      >
+        {group.elements.map((e, i) => (
+          <div className="calendar-element" key={i}>
+            {e}
+          </div>
+        ))}
+      </div>
+  ));
 }
 
 function DaySquare(props: { day: Day, currentDay: Day }) {
@@ -49,24 +81,24 @@ function DaySquare(props: { day: Day, currentDay: Day }) {
     className = 'activeDay';
   } else if (name !== null) {
     className = "holiday"
-  } else if (day.season === -1 || day.month === -1 || WEEKEND_DAYS.includes(day.date % 6)) {
+  } else if (day.quarter === -1 || day.day_number === 0) {
     className = "weekend";
   }
 
   className += " day-square";
 
-  let content: string | JSX.Element = (day.date + 1).toString();
-  if (day.season === -1) {
+  let content: string | JSX.Element = (((day.day_number - 1) % 15) + 1).toString();
+  if (day.quarter === -1) {
     content = <FontAwesomeIcon icon={faGlassCheers}/>;
-  } else if (day.season === -2) {
+  } else if (day.quarter === -2) {
     content = <FontAwesomeIcon icon={faFrog}/>;
-  } else if (day.month === -1) {
-    content = <FontAwesomeIcon icon={SEASON_ICONS[day.season]}/>;
+  } else if (day.day_number === 0) {
+    content = <FontAwesomeIcon icon={SEASON_ICONS[day.quarter]}/>;
   }
 
   const currentYear = gregorianDateToNewDate(GregorianDate.localToday()).year;
   let yearAdjusts = [-1, 0, 1];
-  if (day.season === -2) {
+  if (day.quarter === -2) {
     yearAdjusts = [-4, 0, 4];
   }
   const days = yearAdjusts.map(yearsAdjust => newDateToGregorianDate({
@@ -100,62 +132,90 @@ function DaySquare(props: { day: Day, currentDay: Day }) {
   );
 }
 
-function Month(props: { season: number, month: number, currentDay: Day }) {
-  let {season, month, currentDay} = props;
-  const body = BODY_ORDER_BY_SEASON[season][month % 3];
+function solarTerm(quarter: number, term: number, currentDay: Day): CalendarElement[] {
+  const monthNumber = quarter*3 + Math.floor(term/2);
+  const title = <span>{ORDINALS[term % 2]} {MONTHS[monthNumber]} {MONTH_SYMBOLS[monthNumber]}</span>;
+  const season = SEASONS[(quarter + Math.floor(term/3)) % 4]
+
+  return [
+    {
+      season,
+      jsx: <h2>{title}</h2>
+    },
+    {
+      season,
+      jsx: (
+        <table className="solar-term">
+          <tbody>
+          {range(3).map(w => (
+              <tr key={w} className="d-flex flex-row">
+                {range(5).map(d => (
+                    <th key={d} className="flex-fill">
+                      <DaySquare day={{quarter, day_number: term * 15 + w * 5 + d + 1}} currentDay={currentDay}/>
+                    </th>
+                ))}
+              </tr>
+          ))}
+          </tbody>
+        </table>
+      )
+    },
+  ];
+}
+
+type SpecialDayProps = {
+  day: Day,
+  currentDay: Day,
+}
+
+function SpecialDay(props: SpecialDayProps) {
+  const {day, currentDay} = props;
 
   return (
-      <table className="month">
-        <tbody>
-        {range(5).map(w => (
-          <tr key={w} className="d-flex flex-row">
-            {CelestialImage(body, w + 1)}
-            {range(6).map(d => (
-              <th key={d} className="flex-fill">
-                <DaySquare day={{date: w*6 + d, season, month}} currentDay={currentDay}/>
-              </th>
-            ))}
-            {CelestialImage(body, w + 1)}
-          </tr>
-        ))}
+    <table className='solar-term'>
+      <tbody>
+      <tr>
+        <th>
+          <DaySquare day={day} currentDay={currentDay}/>
+        </th>
+      </tr>
       </tbody>
     </table>
   );
 }
 
-type SeasonProps = {
-  currentDay: Day,
-  index: number,
+function specialDayElements(quarter: number, currentDay: Day): CalendarElement[] {
+  const season = quarter === -1 ? "spring" : "autumn";
+  const day = {quarter, day_number: 0};
+  return [
+    {
+      season,
+      jsx: <h2>{dayName(day)}</h2>
+    },
+    {
+      season,
+      jsx: <SpecialDay day={day} currentDay={currentDay}/>,
+    },
+  ]
 }
 
-function Season(props: SeasonProps) {
-  let { currentDay, index } = props;
+function quarterElements(quarter: number, currentDay: Day): CalendarElement[] {
+  const out: CalendarElement[] = [
+    {
+      season: SEASONS[quarter],
+      jsx: <h2>{FIRST_DAYS[quarter]}</h2>,
+    },
+    {
+      season: SEASONS[quarter],
+      jsx: <SpecialDay day={{quarter, day_number: 0}} currentDay={currentDay}/>,
+    },
+  ];
 
-  return (
-    <div className='col-12 col-md-6 season-wrapper'>
-      <div className='season' id={SEASONS[index]} style={{
-        backgroundImage: `url(/static/img/blank_${SEASONS[index]}.png)`,
-        backgroundSize: 'contain',
-      }}>
-        <h2>{FIRST_DAYS[index]}</h2>
-        <table className='month'>
-          <tbody>
-            <tr>
-              <th>
-                <DaySquare day={{season: index, month: -1, date: -1}} currentDay={currentDay}/>
-              </th>
-            </tr>
-          </tbody>
-        </table>
-        {range(3).map(month => (
-          <div key={month}>
-            <h2>{MONTHS[index*3 + month]} {MONTH_SYMBOLS[index*3 + month]}</h2>
-            <Month season={index} month={month} currentDay={currentDay}/>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+  for (let i = 0; i < 6; i++) {
+    out.push(...solarTerm(quarter, i, currentDay));
+  }
+
+  return out;
 }
 
 export default class NewCalendar extends Component<{}, NewDate> {
@@ -165,7 +225,7 @@ export default class NewCalendar extends Component<{}, NewDate> {
     super(props);
     this.__is_mounted = false;
     this.state = {
-      day: { date: -1, season: -1, month: -1 },
+      day: { quarter: -1, day_number: 0 },
       year: 0,
     }
   }
@@ -188,36 +248,19 @@ export default class NewCalendar extends Component<{}, NewDate> {
     setTimeout(this.updateTime.bind(this), 5000);
   }
 
-  specialDay(season: number) {
-    if (this.state.day.season === season) {
-      let day = {
-        season: season,
-        month: -1,
-        date: -1,
-      };
-
-      return (
-        <div className='col-12 season-wrapper'>
-          <div className='season' id='new-year'>
-            <h2>{dayToString(day)}</h2>
-            <table className='month'>
-              <tbody>
-              <tr>
-                <th>
-                  <DaySquare day={day} currentDay={this.state.day}/>
-                </th>
-              </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      );
-    } else {
-      return null;
-    }
-  }
-
   render() {
+    const elements: CalendarElement[] = [];
+    elements.push(...specialDayElements(-1, this.state.day));
+    [0, 1].forEach(quarter => {
+      elements.push(...quarterElements(quarter, this.state.day));
+    });
+    if (isLeapYear(this.state.year)) {
+      elements.push(...specialDayElements(-2, this.state.day));
+    }
+    [2, 3].forEach(quarter => {
+      elements.push(...quarterElements(quarter, this.state.day));
+    });
+
     return (
       <div className={'calendar-style'}>
         <div className='container-fluid'>
@@ -240,14 +283,9 @@ export default class NewCalendar extends Component<{}, NewDate> {
               </p>
             </div>
 
-            {this.specialDay(-1)}
-            {[0, 1].map(s => (
-                <Season key={s} currentDay={this.state.day} index={s}/>
-            ))}
-            {this.specialDay(-2)}
-            {[2, 3].map(s => (
-              <Season key={s} currentDay={this.state.day} index={s}/>
-            ))}
+            <div className="col-12 col-md-6 offset-md-3 calendar-wrapper">
+              {renderCalendarElements(elements)}
+            </div>
           </div>
         </div>
       </div>

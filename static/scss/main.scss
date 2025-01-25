@@ -202,27 +202,41 @@ $day_square_size: calc(2vw + 3vh);
     padding: 0 1vw;
   }
 
-  .season-wrapper {
-    padding: calc(.6vw + .3vh);
-    background-color: $dark_blue;
+  .calendar-wrapper {
+    margin-top: calc(.6vw + .3vh);
   }
 
-  .season {
+  $season_wrapper_border_radius: calc(1.5vw + 1vh);
+
+  .calendar-section {
+    padding: 0;
+    background-color: $dark_blue;
+
+    &.first {
+      border-radius: $season_wrapper_border_radius $season_wrapper_border_radius 0 0;
+    }
+
+    &.last {
+      border-radius: 0 0 $season_wrapper_border_radius $season_wrapper_border_radius;
+    }
+  }
+
+  .calendar-element {
     width: 100%;
-    border-radius: calc(1.5vw + 1vh);
     display: inline-block;
     text-align: center;
     padding: 1em;
   }
 
-  .season h2 {
+  .calendar-element h2 {
     font-family: "Domine", serif;
     font-size: calc(1.5vw + 1vh);
     font-weight: 600;
     margin: .15vw;
+    padding-top: 2vw;
   }
 
-  .month {
+  .solar-term {
     display: inline-block;
   }
 
@@ -318,22 +332,22 @@ $day_square_size: calc(2vw + 3vh);
     color: $dark_blue;
   }
 
-  #Spring {
+  .season-spring {
     background-color: #478547;
     color: $cream;
   }
 
-  #Summer {
+  .season-summer {
     background-color: #caa02b;
     color: $cream;
   }
 
-  #Autumn {
+  .season-autumn {
     background-color: #994936;
     color: $cream;
   }
 
-  #Winter {
+  .season-winter {
     background-color: #343445;
     color: $cream;
   }

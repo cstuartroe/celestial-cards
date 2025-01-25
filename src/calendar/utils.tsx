@@ -2,7 +2,7 @@ import {SEASONS, Count, Card} from "../Card";
 
 export const range = (n: number) => Array.from(Array(n).keys());
 
-export const WEEKDAYS = ['Skyday','Marsday','Mercuryday','Jupiterday','Venusday','Saturnday'];
+export const WEEKDAYS = ['Saturnday','Marsday','Mercuryday','Jupiterday','Venusday'];
 export const FIRST_DAYS = ['Spring Equinox','Summer Solstice','Autumn Equinox','Winter Solstice',];
 export const MIDSEASON_DAYS = ["Beltane", "Lunasa", "Samhain", "Imbolc"];
 export const MONTHS = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
@@ -16,9 +16,7 @@ export const BODY_ORDER_BY_SEASON: Body[][] = [
   ["sun", "moon", "star"],
   ["sun", "moon", "star"],
   ["star", "moon", "sun"],
-]
-
-export const WEEKEND_DAYS = [0, 5];
+];
 
 function padZeros(n: number): string {
   let out = n.toString();
@@ -96,47 +94,55 @@ export const NEW_YEARS_DAYS: [GregorianDate, number][] = [
 
 
 export type Day = {
-  season: number, // -1 for NYD, 0 for spring, so on (-2 for leap day)
-  month: number,   // -1 for solstice/equinox, 0-2 for regular month
-  date: number,   // 0-29 inclusive
+  quarter: number, // -1 for NYD, 0 for northern hemisphere spring, so on (-2 for leap day)
+  day_number: number, // 0 for solstice/equinox, 1-90 inclusive otherwise
 }
 
 export function dayEq(day1: Day, day2: Day) {
-  if (day1.season === -1) {
-    return day2.season === -1;
-  } else if (day1.month === -1) {
-    return (day1.season === day2.season) && (day2.month === -1);
+  if (day1.quarter < 0) {
+    return day2.quarter === day1.quarter;
   } else {
-    return (day1.season === day2.season) && (day1.month === day2.month) && (day1.date === day2.date);
+    return (day1.quarter === day2.quarter) && (day1.day_number === day2.day_number);
   }
 }
 
-function isLeapYear(year: number) {
+export function isLeapYear(year: number) {
   return (year % 4 === 0) && ((year % 100 !== 0) || (year % 1000 === 0));
 }
 
+export function maxMod(n: number, mod: number) {
+  // Like mod, but e.g. maxMod(60, 30) is 30, not 0
+  return ((n - 1) % mod) + 1;
+}
+
 function dayOfYear(days: number, leapYear: boolean): Day {
+  // If days == 0, it's nyd. If days == 1, it's first equinox, and so on.
   if (leapYear) {
     if (days === 183) {
       return {
-        season: -2,
-        month: -1,
-        date: -1,
+        quarter: -2,
+        day_number: 0,
       }
     } else if (days > 183) {
       days--;
     }
   }
 
-  let season = Math.floor((days - 1) / 91);
-  let dayOfSeason = (days - 1) % 91;
-  let month = Math.floor((dayOfSeason - 1) / 30);
-  let date = (dayOfSeason - 1) % 30;
+  if (days === 0) {
+    return {
+      quarter: -1,
+      day_number: 0,
+    };
+  } else {
+    days--;
+  }
+
+  let quarter = Math.floor(days / 91);
+  let day_number = days % 91;
 
   return {
-    season,
-    month,
-    date,
+    quarter,
+    day_number,
   }
 }
 
@@ -174,11 +180,10 @@ export function gregorianDateToNewDate(date: GregorianDate): NewDate {
 
 export function newDateToGregorianDate(date: NewDate): GregorianDate {
   let out: GregorianDate = new GregorianDate(date.year - 3346, 2, 18);
-  if (date.day.season > 0) {
-    out = out.daysAfter(91 * date.day.season);
+  if (date.day.quarter > 0) {
+    out = out.daysAfter(91 * date.day.quarter);
   }
-  out = out.daysAfter(30*date.day.month);
-  out = out.daysAfter(date.day.date);
+  out = out.daysAfter(date.day.day_number);
 
   while (!dayEq(gregorianDateToNewDate(out).day, date.day)) {
     out = out.daysAfter(1);
@@ -188,20 +193,20 @@ export function newDateToGregorianDate(date: NewDate): GregorianDate {
 }
 
 export function dayName(day: Day): string | null {
-  if (day.season === -1) {
+  if (day.quarter === -1) {
     return "New Years' Day";
   }
 
-  if (day.season === -2) {
+  if (day.quarter === -2) {
     return "Leap Day";
   }
 
-  if (day.month === -1) {
-    return FIRST_DAYS[day.season];
+  if (day.day_number === 0) {
+    return FIRST_DAYS[day.quarter];
   }
 
-  if (day.month === 1 && day.date === 11) {
-    return MIDSEASON_DAYS[day.season];
+  if (day.day_number === 46) {
+    return MIDSEASON_DAYS[day.quarter];
   }
 
   return null;
@@ -213,19 +218,19 @@ export function dayToString(day: Day) {
     return name;
   }
 
-  return WEEKDAYS[day.date % 6] + " " + (day.date + 1).toString() + "\xa0"
-    + MONTHS[day.season*3 + day.month];
+  return WEEKDAYS[(day.day_number - 1) % 5] + " " + maxMod(day.day_number, 30).toString() + "\xa0"
+    + MONTHS[day.quarter*3 + Math.floor((day.day_number - 1) / 30)];
 }
 
 export function dayToCard(day: Day): Card {
-  if (day.season === -1) {
+  if (day.quarter === -1) {
     return {season: "spring", count: 1, shape: "star"};
-  } else if (day.season === -2) {
+  } else if (day.quarter === -2) {
     return {season: "autumn", count: 1, shape: "sun"};
-  } else if (day.month === -1) {
-    return {season: SEASONS[day.season], count: 1, shape: BODY_ORDER_BY_SEASON[day.season][0]};
+  } else if (day.day_number === 0) {
+    return {season: SEASONS[day.quarter], count: 1, shape: BODY_ORDER_BY_SEASON[day.quarter][0]};
   } else {
-    const count = Math.floor(day.date/6) + 1 as Count
-    return {season: SEASONS[day.season], count: count, shape: BODY_ORDER_BY_SEASON[day.season][day.month]};
+    const count = maxMod(day.day_number, 5) as Count
+    return {season: SEASONS[day.quarter], count: count, shape: BODY_ORDER_BY_SEASON[day.quarter][Math.floor((day.day_number - 1) / 30)]};
   }
 }
