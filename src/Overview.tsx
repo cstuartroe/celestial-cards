@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import Card, {SEASONS, SHAPES, COUNTS} from "./Card";
+import Card, {SEASONS, BODIES, COUNTS} from "./Card";
 import classNames from "classnames";
 
 function crossProduct<S, T>(l1: readonly S[], l2: readonly T[]): [S, T][] {
@@ -55,7 +55,7 @@ export default class Overview extends Component<Props, State> {
                 <h3>Celestial body (shape)</h3>
 
                 <div className="row">
-                    {SHAPES.map((shape, i) => (
+                    {BODIES.map((shape, i) => (
                         <div className={classNames("col-2", {"offset-3": i === 0})} key={shape}>
                             <Card season={"spring"} count={1} shape={shape}/>
                             <div className="caption">{shape}</div>
@@ -89,7 +89,7 @@ export default class Overview extends Component<Props, State> {
                     A full deck of celestial cards looks like
                 </p>
 
-                {crossProduct(SEASONS, SHAPES).map(([season, shape]) => (
+                {crossProduct(SEASONS, BODIES).map(([season, shape]) => (
                     <div className="row" key={`${season} ${shape}`}>
                         {COUNTS.map(count => (
                             <div className={classNames("col-2", {"offset-1": count === 1})} key={count}>

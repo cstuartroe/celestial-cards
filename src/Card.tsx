@@ -2,14 +2,14 @@ import React, {Component} from "react";
 import classNames from "classnames";
 
 export const SEASONS = ["spring", "summer", "autumn", "winter"] as const;
-export const SHAPES = ["sun", "moon", "star"] as const;
+export const BODIES = ["sun", "moon", "star"] as const;
 export const COUNTS = [1, 2, 3, 4, 5] as const;
 
 export type Season = (typeof SEASONS)[number];
-export type Shape = (typeof SHAPES)[number];
+export type Body = (typeof BODIES)[number];
 export type Count = (typeof COUNTS)[number];
 
-export type CardProps = [Count, Season, Shape];
+export type CardProps = [Count, Season, Body];
 
 const season_numbers = {
     "spring": 0,
@@ -35,7 +35,7 @@ function padNumber(n: number) {
 export type Card = {
     season: Season,
     count: Count,
-    shape: Shape,
+    shape: Body,
 }
 
 type Props = Card & {

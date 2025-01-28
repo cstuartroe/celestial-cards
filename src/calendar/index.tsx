@@ -1,26 +1,30 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCloud, faSun, faLeaf, faSnowflake, faGlassCheers, faFrog } from "@fortawesome/free-solid-svg-icons";
-import {Season, SEASONS} from "../Card";
+import { faSeedling, faFan, faWheatAwn, faCrow, faArrowsSpin, faFrog } from "@fortawesome/free-solid-svg-icons";
+import {Season, SEASONS, Body} from "../Card";
 import {
   range,
   Day,
   NewDate,
-  FIRST_DAYS,
+  CROSS_QUARTER_DAYS,
   MONTHS,
   gregorianDateToNewDate,
   dayName,
   dayToString,
   dayEq,
   GregorianDate,
-  newDateToGregorianDate, isLeapYear,
+  newDateToGregorianDate,
+  isLeapYear,
+  BODY_ORDER_BY_SEASON,
+  PLANET_SYMBOLS,
+  PLANETS,
+  dayAndYearToJSX,
 } from "./utils";
 import classNames from "classnames";
 
-const MONTH_SYMBOLS = ['♈︎', '♉︎', '♊︎', '♋︎', '♌︎', '♍︎', '♎︎', '♏︎', '♐︎', '♑︎', '♒︎', '♓︎'];
-const SEASON_ICONS = [faCloud, faSun, faLeaf, faSnowflake];
-const ORDINALS = [<span>1<sup>st</sup></span>, <span>2<sup>nd</sup></span>];
+const MONTH_SYMBOLS = ['寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥', '子', '丑'];
+const SEASON_ICONS = [faSeedling, faFan, faWheatAwn, faCrow];
 
 type CalendarColor = Season | "white" | "black";
 
@@ -33,7 +37,7 @@ function seasonStyle(season: CalendarColor) {
   if (SEASONS.includes(season as Season)) {
     return {
       backgroundImage: `url(/static/img/blank_${season}.png)`,
-      backgroundSize: 'contain',
+      backgroundSize: '1000px',
     };
   }
 
@@ -71,25 +75,45 @@ function renderCalendarElements(elements: CalendarElement[]) {
   ));
 }
 
+function CelestialImage(body: Body, count: number) {
+  return (
+      <th className="flex-fill">
+        <img
+            src={`/static/img/blank_${count}_${body}s.png`}
+            style={{
+              width: "calc(2vw + 3vh)",
+              margin: "2px",
+            }}
+            alt={`${count} ${body}s`}
+        />
+      </th>
+  );
+}
+
 function DaySquare(props: { day: Day, currentDay: Day }) {
   let { day, currentDay } = props;
 
   const name = dayName(day);
 
-  let className = "weekday";
+  let weekday = (day.day_number - 1) % 6;
+  if (day.quarter < 0) {
+    weekday = 5;
+  } else if (day.day_number === 0) {
+    weekday = (day.quarter % 2 === 0) ? 5 : 0;
+  }
+
+  let className = PLANETS[weekday].toLowerCase() + "day";
   if (dayEq(day, currentDay)) {
-    className = 'activeDay';
+    className += " activeDay";
   } else if (name !== null) {
-    className = "holiday"
-  } else if (day.quarter === -1 || day.day_number === 0) {
-    className = "weekend";
+    className += " holiday"
   }
 
   className += " day-square";
 
-  let content: string | JSX.Element = (((day.day_number - 1) % 15) + 1).toString();
+  let content: string | JSX.Element = PLANET_SYMBOLS[weekday];
   if (day.quarter === -1) {
-    content = <FontAwesomeIcon icon={faGlassCheers}/>;
+    content = <FontAwesomeIcon icon={faArrowsSpin}/>;
   } else if (day.quarter === -2) {
     content = <FontAwesomeIcon icon={faFrog}/>;
   } else if (day.day_number === 0) {
@@ -113,14 +137,14 @@ function DaySquare(props: { day: Day, currentDay: Day }) {
           onClick={() => {
             let earlyGregorianDate = newDateToGregorianDate({
               day,
-              year: 5300,
+              year: 5341,
             });
 
             window.open(`/calendar/birthday?date=${earlyGregorianDate.getISO()}`, '_blank');
           }}
       >
         <div className="date-tooltip">
-          {name && <p className="holiday-name">{name}</p>}
+          <p className="day-name">{name || dayToString(day)}</p>
           {days.map((d, i) => (
               <p key={i}>
                 {d.toString()}
@@ -132,10 +156,11 @@ function DaySquare(props: { day: Day, currentDay: Day }) {
   );
 }
 
-function solarTerm(quarter: number, term: number, currentDay: Day): CalendarElement[] {
-  const monthNumber = quarter*3 + Math.floor(term/2);
-  const title = <span>{ORDINALS[term % 2]} {MONTHS[monthNumber]} {MONTH_SYMBOLS[monthNumber]}</span>;
-  const season = SEASONS[(quarter + Math.floor(term/3)) % 4]
+function monthElements(quarter: number, month: number, currentDay: Day): CalendarElement[] {
+  const monthNumber = quarter*3 + month;
+  const title = <span>{MONTHS[monthNumber]} {MONTH_SYMBOLS[monthNumber]}</span>;
+  const season = SEASONS[quarter]
+  const body = BODY_ORDER_BY_SEASON[season][month % 3];
 
   return [
     {
@@ -147,13 +172,15 @@ function solarTerm(quarter: number, term: number, currentDay: Day): CalendarElem
       jsx: (
         <table className="solar-term">
           <tbody>
-          {range(3).map(w => (
+          {range(5).map(w => (
               <tr key={w} className="d-flex flex-row">
-                {range(5).map(d => (
+                {CelestialImage(body, w + 1)}
+                {range(6).map(d => (
                     <th key={d} className="flex-fill">
-                      <DaySquare day={{quarter, day_number: term * 15 + w * 5 + d + 1}} currentDay={currentDay}/>
+                      <DaySquare day={{quarter, day_number: month * 30 + w * 6 + d + 1}} currentDay={currentDay}/>
                     </th>
                 ))}
+                {CelestialImage(body, w + 1)}
               </tr>
           ))}
           </tbody>
@@ -185,7 +212,7 @@ function SpecialDay(props: SpecialDayProps) {
 }
 
 function specialDayElements(quarter: number, currentDay: Day): CalendarElement[] {
-  const season = quarter === -1 ? "spring" : "autumn";
+  const season = "black";
   const day = {quarter, day_number: 0};
   return [
     {
@@ -200,19 +227,20 @@ function specialDayElements(quarter: number, currentDay: Day): CalendarElement[]
 }
 
 function quarterElements(quarter: number, currentDay: Day): CalendarElement[] {
+  const cross_quarter_season = (quarter % 2 === 0) ? "black" : "white";
   const out: CalendarElement[] = [
     {
-      season: SEASONS[quarter],
-      jsx: <h2>{FIRST_DAYS[quarter]}</h2>,
+      season: cross_quarter_season,
+      jsx: <h2>{CROSS_QUARTER_DAYS[quarter]}</h2>,
     },
     {
-      season: SEASONS[quarter],
+      season: cross_quarter_season,
       jsx: <SpecialDay day={{quarter, day_number: 0}} currentDay={currentDay}/>,
     },
   ];
 
-  for (let i = 0; i < 6; i++) {
-    out.push(...solarTerm(quarter, i, currentDay));
+  for (let i = 0; i < 3; i++) {
+    out.push(...monthElements(quarter, i, currentDay));
   }
 
   return out;
@@ -267,10 +295,9 @@ export default class NewCalendar extends Component<{}, NewDate> {
           <div className='row'>
             <div className='col-12'>
               <h1 id='current'>
-                today is{' '}
-                {dayToString(this.state.day)}
-                {'\xa0'}
-                {this.state.year}
+                today is
+                <br/>
+                {dayAndYearToJSX(this.state)}
               </h1>
             </div>
             <div className='col-12 explanation'>

@@ -1,5 +1,6 @@
 $cream: #ddddcc;
 $dark_blue: #202027;
+$dark_gray: #111111;
 
 $spring_green: #478547;
 $summer_gold: #dbb448;
@@ -176,6 +177,14 @@ $day_square_size: calc(2vw + 3vh);
 .calendar-style {
   text-align: center;
 
+  ul {
+    margin-left: 6vw;
+  }
+
+  li {
+    text-align: left;
+  }
+
 
   .container-fluid .row {
     padding: 1em;
@@ -190,12 +199,22 @@ $day_square_size: calc(2vw + 3vh);
   }
 
   #current {
-    font-size: calc(3vw + 1.5vh);
+    font-size: calc(2vw + 1vh);
     font-weight: 600;
   }
 
   .explanation p {
     text-align: left;
+  }
+
+  .explanation table {
+    display: inline-block;
+    margin-top: 2vh;
+
+    td {
+      border: $border;
+      padding: 1.5vh;
+    }
   }
 
   td {
@@ -210,7 +229,6 @@ $day_square_size: calc(2vw + 3vh);
 
   .calendar-section {
     padding: 0;
-    background-color: $dark_blue;
 
     &.first {
       border-radius: $season_wrapper_border_radius $season_wrapper_border_radius 0 0;
@@ -261,17 +279,53 @@ $day_square_size: calc(2vw + 3vh);
       padding-top: 0;
     }
 
-    &.weekend {
+    &.skyday {
       background-color: $cream;
-      border-color: $dark_blue;
+      border-color: $dark_gray;
 
       p {
-        color: $dark_blue;
+        color: $dark_gray;
       }
     }
 
-    &.weekday {
-      background-color: $dark_blue;
+    &.jupiterday {
+      background-color: $spring_green;
+      border-color: $dark_gray;
+
+      p {
+        color: $dark_gray;
+      }
+    }
+
+    &.venusday {
+      background-color: $summer_gold;
+      border-color: $dark_gray;
+
+      p {
+        color: $dark_gray;
+      }
+    }
+
+    &.marsday {
+      background-color: $autumn_red;
+      border-color: $cream;
+
+      p {
+        color: $cream;
+      }
+    }
+
+    &.mercuryday {
+      background-color: $winter_blue;
+      border-color: $cream;
+
+      p {
+        color: $cream;
+      }
+    }
+
+    &.saturnday {
+      background-color: $dark_gray;
       border-color: $cream;
 
       p {
@@ -280,21 +334,7 @@ $day_square_size: calc(2vw + 3vh);
     }
 
     &.activeDay {
-      background-color: $lavender;
-      border-color: $cream;
-
-      p {
-        color: $cream;
-      }
-    }
-
-    &.holiday {
-      background-color: $fire_orange;
-      border-color: $cream;
-
-      p {
-        color: $cream;
-      }
+      border-color: $lavender;
     }
 
     position: relative;
@@ -308,17 +348,25 @@ $day_square_size: calc(2vw + 3vh);
       bottom: calc($day_square_size + 1vh);
       z-index: 1;
       margin-left: calc(-4vw - 8vh + .5*$day_square_size);
-      border: $invisible-border;
+      border: $border_thickness solid $dark_gray;
 
       p {
-        font-size: calc(.75vw + 1.5vh);
-        color: $dark_blue;
+        font-size: calc(.6vw + 1.2vh);
+        color: $dark_gray;
 
-        &.holiday-name {
-          color: $fire_orange;
-          background-color: $dark_blue;
+        &.day-name {
+          color: $cream;
+          background-color: $dark_gray;
           margin-top: 0;
         }
+      }
+    }
+
+    &.holiday {
+      border-color: $fire_orange;
+
+      .date-tooltip p.day-name {
+        color: $fire_orange;
       }
     }
 
@@ -327,19 +375,14 @@ $day_square_size: calc(2vw + 3vh);
     }
   }
 
-  #new-year {
-    background-color: #ccccdd;
-    color: $dark_blue;
-  }
-
   .season-spring {
     background-color: #478547;
-    color: $cream;
+    color: $dark_gray;
   }
 
   .season-summer {
     background-color: #caa02b;
-    color: $cream;
+    color: $dark_gray;
   }
 
   .season-autumn {
@@ -349,6 +392,16 @@ $day_square_size: calc(2vw + 3vh);
 
   .season-winter {
     background-color: #343445;
+    color: $cream;
+  }
+
+  .season-white {
+    background-color: $cream;
+    color: $dark_gray;
+  }
+
+  .season-black {
+    background-color: $dark_gray;
     color: $cream;
   }
 }

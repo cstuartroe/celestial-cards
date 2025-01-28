@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import Card, {CardProps, Shape} from "../Card";
+import Card, {CardProps, Body} from "../Card";
 
 type CardGridIcon = "right_arrow" | "left_arrow";
 

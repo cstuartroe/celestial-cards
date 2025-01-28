@@ -73,7 +73,7 @@ export default class NewCalendarBirthdayViewer extends Component<{}, State> {
                                 which card is your birthday card.
                             </p>
 
-                            <input type="date" id="start" name="trip-start" value={this.state.date} min="1801-01-01"
+                            <input type="date" id="start" name="trip-start" value={this.state.date} min="1601-01-01"
                                    max="2300-12-31"
                                    style={{marginTop: "2vh"}}
                                    onChange={e => this.setDate(e.target.value)} />

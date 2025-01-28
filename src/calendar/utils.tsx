@@ -1,22 +1,34 @@
-import {SEASONS, Count, Card} from "../Card";
+import {Season, SEASONS, Body, Count, Card} from "../Card";
 
 export const range = (n: number) => Array.from(Array(n).keys());
 
-export const WEEKDAYS = ['Saturnday','Marsday','Mercuryday','Jupiterday','Venusday'];
-export const FIRST_DAYS = ['Spring Equinox','Summer Solstice','Autumn Equinox','Winter Solstice',];
-export const MIDSEASON_DAYS = ["Beltane", "Lunasa", "Samhain", "Imbolc"];
-export const MONTHS = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+export const PLANETS = ['Sky','Jupiter','Venus','Mars','Mercury','Saturn'] as const;
+type Planet = (typeof PLANETS)[number];
+export const PLANET_SYMBOLS = ['🝰', '♃', '♀', '♂', '☿', '♄'];
+export const QUARTER_DAYS = ['Spring Equinox','Summer Solstice','Autumn Equinox','Winter Solstice',];
+export const CROSS_QUARTER_DAYS = ["Imbolc", "Beltane", "Lunasa", "Samhain"];
+export const MONTHS = ["Tiger", "Rabbit", "Dragon", "Snake", "Horse", "Goat",
+  "Monkey", "Rooster", "Dog", "Pig", "Rat", "Ox"];
+export const ZODIAC = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
   "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
-export const CELESTIAL_BODIES = ["moon", "sun", "star"] as const;
+export const CONSTELLATIONS = ["Pegasus", "Andromeda", "Pleiades", "Auriga", "Monoceros", "Hydra", "Corvus",
+  "Centaurus", "Lupus", "Ophiuchus", "Aquila", "Delphinus"];
 
-export type Body = (typeof CELESTIAL_BODIES)[number];
+const ORDINALS = ["First", "Second", "Third", "Fourth", "Fifth"]
 
-export const BODY_ORDER_BY_SEASON: Body[][] = [
-  ["star", "moon", "sun"],
-  ["sun", "moon", "star"],
-  ["sun", "moon", "star"],
-  ["star", "moon", "sun"],
-];
+export const BODY_ORDER_BY_SEASON: {[key in Season]: Body[]} = {
+  "spring": ["star", "moon", "sun"],
+  "summer": ["moon", "sun", "star"],
+  "autumn": ["sun", "moon", "star"],
+  "winter": ["moon", "star", "sun"],
+};
+
+export const SEASONS_TO_PLANETS: {[key in Season]: Planet} = {
+  "spring": "Jupiter",
+  "summer": "Venus",
+  "autumn": "Mars",
+  "winter": "Mercury",
+}
 
 function padZeros(n: number): string {
   let out = n.toString();
@@ -85,11 +97,12 @@ export class GregorianDate {
 }
 
 export const NEW_YEARS_DAYS: [GregorianDate, number][] = [
-    [new GregorianDate(1800, 2, 22), 5146],
-    [new GregorianDate(1900, 2, 22), 5246],
-    [new GregorianDate(1950, 2, 21), 5296],
-    [new GregorianDate(1990, 2, 21), 5336],
-    [new GregorianDate(2016, 2, 21), 5362],
+    [new GregorianDate(1600, 1, 6), 4946],
+    [new GregorianDate(1800, 1, 5), 5146],
+    [new GregorianDate(1900, 1, 5), 5246],
+    [new GregorianDate(1950, 1, 5), 5296],
+    [new GregorianDate(1990, 1, 4), 5336],
+    [new GregorianDate(2016, 1, 5), 5362],
 ];
 
 
@@ -151,6 +164,34 @@ export type NewDate = {
   year: number,
 }
 
+function yearInEpoch(year: number) {
+  return maxMod(year, 60)
+}
+
+function getEpoch(year: number) {
+  return Math.ceil(year / 60);
+}
+
+function ordinal(n: number) {
+  let suffix: string = "";
+
+  if ([11, 12].includes(n % 100)) {
+    suffix = "th";
+  } else {
+    const lastDigit = (n%10) + "";
+    switch (lastDigit) {
+      case "1":
+        suffix = "st"; break;
+      case "2":
+        suffix = "nd"; break;
+      default:
+        suffix = "th"; break;
+    }
+  }
+
+  return <span>{n}<sup>{suffix}</sup></span>;
+}
+
 export function gregorianDateToNewDate(date: GregorianDate): NewDate {
   let i = NEW_YEARS_DAYS.length - 1;
   while (NEW_YEARS_DAYS[i][0].getTime() > date.getTime()) {
@@ -179,7 +220,7 @@ export function gregorianDateToNewDate(date: GregorianDate): NewDate {
 }
 
 export function newDateToGregorianDate(date: NewDate): GregorianDate {
-  let out: GregorianDate = new GregorianDate(date.year - 3346, 2, 18);
+  let out: GregorianDate = new GregorianDate(date.year - 3346, 0, 29);
   if (date.day.quarter > 0) {
     out = out.daysAfter(91 * date.day.quarter);
   }
@@ -202,11 +243,12 @@ export function dayName(day: Day): string | null {
   }
 
   if (day.day_number === 0) {
-    return FIRST_DAYS[day.quarter];
+    return CROSS_QUARTER_DAYS[day.quarter];
   }
 
-  if (day.day_number === 46) {
-    return MIDSEASON_DAYS[day.quarter];
+  const quarter_day_number = 43 + PLANETS.indexOf(SEASONS_TO_PLANETS[SEASONS[day.quarter]]);
+  if (day.day_number === quarter_day_number) {
+    return QUARTER_DAYS[day.quarter];
   }
 
   return null;
@@ -218,8 +260,17 @@ export function dayToString(day: Day) {
     return name;
   }
 
-  return WEEKDAYS[(day.day_number - 1) % 5] + " " + maxMod(day.day_number, 30).toString() + "\xa0"
-    + MONTHS[day.quarter*3 + Math.floor((day.day_number - 1) / 30)];
+  const dn = day.day_number - 1;
+  return `the ${ORDINALS[Math.floor((dn % 30) / 6)]} ${PLANETS[dn % 6]}day of ${MONTHS[day.quarter*3 + Math.floor(dn / 30)]}-month`;
+}
+
+export function dayAndYearToJSX(d: NewDate): JSX.Element {
+  return <span>
+    {dayToString(d.day)}
+    <br/>
+    of the {ordinal(yearInEpoch(d.year))} year of
+    the {ordinal(getEpoch(d.year))} era
+  </span>
 }
 
 export function dayToCard(day: Day): Card {
@@ -228,9 +279,38 @@ export function dayToCard(day: Day): Card {
   } else if (day.quarter === -2) {
     return {season: "autumn", count: 1, shape: "sun"};
   } else if (day.day_number === 0) {
-    return {season: SEASONS[day.quarter], count: 1, shape: BODY_ORDER_BY_SEASON[day.quarter][0]};
+    return {season: SEASONS[day.quarter], count: 1, shape: BODY_ORDER_BY_SEASON[SEASONS[day.quarter]][0]};
   } else {
-    const count = maxMod(day.day_number, 5) as Count
-    return {season: SEASONS[day.quarter], count: count, shape: BODY_ORDER_BY_SEASON[day.quarter][Math.floor((day.day_number - 1) / 30)]};
+    const count = Math.floor(((day.day_number - 1) % 30) / 6) + 1 as Count
+    return {season: SEASONS[day.quarter], count: count, shape: BODY_ORDER_BY_SEASON[SEASONS[day.quarter]][Math.floor((day.day_number - 1) / 30)]};
   }
 }
+
+function gregorianDistribution(day: Day) {
+  const result: {[key: string]: number} = {};
+
+  const startYear = NEW_YEARS_DAYS[0][1] + 1;
+  const numYears = 500;
+  for (let year = startYear; year <= startYear + numYears; year++) {
+    const gd = newDateToGregorianDate({day, year});
+    const key = `${gd.getMonth() + 1}-${gd.getDate()}`;
+
+    result[key] = (result[key] || 0) + 1;
+  }
+
+  const firstGregorianYear = NEW_YEARS_DAYS[0][0].getYear() + 1;
+  const lastGregorianYear = firstGregorianYear + numYears;
+
+  console.log(`Distribution of ${dayToString(day)} from Gregorian ${firstGregorianYear} to ${lastGregorianYear}:`)
+  console.log(result);
+}
+
+// for (let quarter = -2; quarter <= 3; quarter++) {
+//   gregorianDistribution({quarter, day_number: 0});
+//
+//   if (quarter >= 0) {
+//     for (let day_number = 1; day_number <= 61; day_number += 30) {
+//       gregorianDistribution({quarter, day_number});
+//     }
+//   }
+// }
