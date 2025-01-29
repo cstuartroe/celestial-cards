@@ -273,9 +273,9 @@ $day_square_size: calc(2vw + 3vh);
 
     p {
       font-size: calc(.9vw + 1.8vh);
-      font-family: "Domine", serif;
+      font-family: "Symbola", serif;
       margin: 0;
-      margin-top: calc(.4vh + .4vw);
+      margin-top: calc(.4vh + .6vw);
       padding-top: 0;
     }
 
@@ -352,6 +352,7 @@ $day_square_size: calc(2vw + 3vh);
 
       p {
         font-size: calc(.6vw + 1.2vh);
+        font-family: "Domine", serif;
         color: $dark_gray;
 
         &.day-name {
