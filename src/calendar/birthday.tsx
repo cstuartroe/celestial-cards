@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {Link} from "react-router-dom";
 
 
-import {gregorianDateToNewDate, dayToString, dayToCard, GregorianDate, dayEq} from "./utils";
+import {gregorianDateToNewDate, dayToCard, GregorianDate, dayEq, dayAndYearToJSX} from "./utils";
 import {dateTable} from "./explanation";
 import CardImage from "../Card";
 
@@ -24,12 +24,11 @@ export default class NewCalendarBirthdayViewer extends Component<{}, State> {
         const datetime = new Date(this.state.date + "T00:00:00+0000");
         const date = new GregorianDate(datetime.getUTCFullYear(), datetime.getUTCMonth(), datetime.getUTCDate());
         const newDate = gregorianDateToNewDate(date);
-        const dateString = `${dayToString(newDate.day)} ${newDate.year}`;
 
         return (
             <>
                 <p style={{textAlign: 'center'}}>
-                    {dateString}
+                    {dayAndYearToJSX(newDate)}
                 </p>
                 <CardImage {...dayToCard(newDate.day)} bigger/>
                 <p>These are all your celestial birthdays up to your 100th:</p>

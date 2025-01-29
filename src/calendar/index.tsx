@@ -15,7 +15,7 @@ import {
   dayEq,
   GregorianDate,
   newDateToGregorianDate,
-  isLeapYear,
+  isNewLeapYear,
   BODY_ORDER_BY_SEASON,
   PLANET_SYMBOLS,
   PLANETS,
@@ -137,7 +137,7 @@ function DaySquare(props: { day: Day, currentDay: Day }) {
           onClick={() => {
             let earlyGregorianDate = newDateToGregorianDate({
               day,
-              year: 5341,
+              year: 5313,
             });
 
             window.open(`/calendar/birthday?date=${earlyGregorianDate.getISO()}`, '_blank');
@@ -282,7 +282,7 @@ export default class NewCalendar extends Component<{}, NewDate> {
     [0, 1].forEach(quarter => {
       elements.push(...quarterElements(quarter, this.state.day));
     });
-    if (isLeapYear(this.state.year)) {
+    if (isNewLeapYear(this.state.year)) {
       elements.push(...specialDayElements(-2, this.state.day));
     }
     [2, 3].forEach(quarter => {

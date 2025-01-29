@@ -5,7 +5,9 @@ import {
   NewDate,
   GregorianDate,
   gregorianDateToNewDate,
-  dayToString, CONSTELLATIONS, dayAndYearToJSX,
+  FIRST_YEAR,
+  CONSTELLATIONS,
+  dayAndYearToJSX, ordinal, CYCLE_LENGTH, AGE_LENGTH, gregorianYearWithEra,
 } from "./utils";
 
 export function   dateTable(startDate: GregorianDate, days: number, skipCondition: (d: NewDate) => boolean) {
@@ -294,7 +296,7 @@ export default class NewCalendarExplanation extends Component<{}, {}> {
                 yields metal; and autumn to winter is air because metal + air yields water.
               </p>
 
-              <h3>Years & eras</h3>
+              <h3>Years</h3>
 
               <p>
                 This is a strictly solar calendar.
@@ -308,22 +310,12 @@ export default class NewCalendarExplanation extends Component<{}, {}> {
               </p>
 
               <p>
-                Years are grouped into 60-year eras, analogous to centuries, the Chinese sexagenary cycle, or the
-                Mayan Calendar Round. Year names are given as "the m<sup>th</sup> year of the n<sup>th</sup> era".
-              </p>
-
-              <p>
-                The first era of this calendar began in February of 3346 BCE.
-                There's nothing special about that specific year,
-                but it is approximately when the first known true writing dates to, with the intent that all written
-                history should fall into the positive years of the calendar rather than messing with some kind of
-                confusing BCE situation.
-                Here are the New Years' Days for the current and next five years:
+                Here are the New Years' Days for the current and next six years:
               </p>
 
               {dateTable(
                   GregorianDate.localToday().daysAfter(-366),
-                  365 * 6 + 3,
+                  365 * 7 + 3,
                   (d) => d.day.quarter !== -1
               )}
 
@@ -346,7 +338,8 @@ export default class NewCalendarExplanation extends Component<{}, {}> {
 
               <p>
                 The most intuitive one, maybe, is
-                meteorological - dividing the year into its on-average coldest quarter and calling it winter, calling its
+                meteorological - dividing the year into its on-average coldest quarter and calling it winter, calling
+                its
                 hottest quarter summer, and calling the in-between times spring and autumn. This leads to a highly
                 local definition of those seasons, though it's somewhat common to simply round to
                 the nearest whole month, with all of December, January, and February being meteorological winter etc.
@@ -367,15 +360,17 @@ export default class NewCalendarExplanation extends Component<{}, {}> {
 
               <p>
                 A subdivision of the year into months is nearly universal around the world. In fact, lunisolar calendars
-                - in which the months exactly correspond to lunar cycles, and years vary in number of months - are the norm
-                historically. This calendar is instead like the Gregorian calendar, in that it has months of approximately the
+                - in which the months exactly correspond to lunar cycles, and years vary in number of months - are the
+                norm
+                historically. This calendar is instead like the Gregorian calendar, in that it has months of
+                approximately the
                 length of a lunar cycle, but is in fact purely solar with months that diverge from the actual sidereal
                 month.
               </p>
 
               <p>
                 The months align with the solar season reckoning, beginning on anywhere from the 4<sup>th</sup> to
-                11<sup>th</sup> day of each Gregorian month, and with
+                9<sup>th</sup> day of each Gregorian month, and with
                 solstices and equinoxes occurring in the middle of months. I've provisionally labeled the months with
                 the animals of the <a href="https://en.wikipedia.org/wiki/Earthly_Branches">twelve earthly branches</a>,
                 used to label months in the traditional Chinese calendar - and perhaps most familiar globally as the
@@ -384,7 +379,8 @@ export default class NewCalendarExplanation extends Component<{}, {}> {
                 I'm not very happy with this system though - the
                 Chinese calendar is lunisolar and its months can differ from the same-named months of my calendar by
                 up to 15 or so days; I think this is as confusing for users of the Chinese calendar as it would be
-                for Gregorian calendar users if I named e.g. my first month "February" despite it being several days later
+                for Gregorian calendar users if I named e.g. my first month "February" despite it being several days
+                later
                 than Gregorian February.
               </p>
 
@@ -411,7 +407,8 @@ export default class NewCalendarExplanation extends Component<{}, {}> {
               <h3>The week, and solstices and equinoxes</h3>
 
               <p>
-                The 30-day months are split into five 6-day weeks. The weeks are numbered 1-5, and each week is associated
+                The 30-day months are split into five 6-day weeks. The weeks are numbered 1-5, and each week is
+                associated
                 with a card in the celestial card deck: the season of the week corresponds to the season of the card,
                 the celestial body of the month corresponds to the body of the card, and the week's number corresponds
                 to the card's number. For instance, the fourth week of the second month of summer is associated with the
@@ -443,7 +440,8 @@ export default class NewCalendarExplanation extends Component<{}, {}> {
 
               <p>
                 Due to the eccentricity of Earth's orbit, the solstices and equinoxes are not evenly spaced - the
-                equinoxes (especially the March equinox) are a bit closer to the December solstice than the June solstice.
+                equinoxes (especially the March equinox) are a bit closer to the December solstice than the June
+                solstice.
                 To account for this, my calendar does not simply mark the solstices and equinoxes on the middle day
                 of the middle month of each season - it marks them on the day of the middle week of the middle month
                 which matches the season itself. That is, (in the northern hemisphere), the spring equinox is marked
@@ -454,34 +452,90 @@ export default class NewCalendarExplanation extends Component<{}, {}> {
                 This puts 92 days in between the March equinox and June solstice, 92 (or 93 in leap years) days in
                 between the June solstice and September equinox, 92 days in between the September equinox and December
                 solstice, and 89 days in between the December solstice and March equinox, which is very close to the
-                actual spacing between those events. It ends up that the calendar typically marks solstices and equinoxes
+                actual spacing between those events. It ends up that the calendar typically marks solstices and
+                equinoxes
                 no more than a day off of the actual moment of those astronomical events.
               </p>
 
-              <h3>Special days and leap years</h3>
+              <h3>Special days</h3>
 
               <p>
-                Sixty weeks of six days each adds to 360 days, leaving five (or six) days unaccounted for. The transitions
+                Sixty weeks of six days each adds to 360 days, leaving five (or six) days unaccounted for. The
+                transitions
                 between seasons are marked by a special day which is outside of any week; these days are best known
-                in English-language custom according to their anglicized Irish names: Imbolc, Beltane, Lunasa, and Samhain,
+                in English-language custom according to their anglicized Irish names: Imbolc, Beltane, Lunasa, and
+                Samhain,
                 and I've labeled them as such.
                 These so-called <a href="https://en.wikipedia.org/wiki/Quarter_days#In_Ireland" target="_blank">
-                cross-quarter days</a> are the most significant holidays in Celtic paganism; Beltane and Samhain in particular
+                cross-quarter days</a> are the most significant holidays in Celtic paganism; Beltane and Samhain in
+                particular
                 are somewhat more widely known as being predecessors of/equivalent to May Day and Halloween. Though, in
-                Ireland they've long been celebrated on the first day of Gregorian months (February, May, August, November),
+                Ireland they've long been celebrated on the first day of Gregorian months (February, May, August,
+                November),
                 whereas in this calendar they're of course a few days later.
               </p>
 
               <p>
                 The fifth and final special day in non-leap years is New Years' Day, marked the day before Imbolc
                 (early February).
-                This calendar has leap years with the same rules as the Gregorian calendar - if the year number
-                is divisible by 4, unless it is divisible by 100, unless it is divisible by 400. The leap day
-                is inserted opposite of New Years' Day, the day before Lunasa (early August). Since the
-                year numbering, and thus the allocation of leap days, for Gregorian and this calendar are entirely
-                different, over the course of several
-                centuries the correspondence between their dates can drift by up to four days.
+                On leap years, a leap day is inserted opposite of New Years' Day, the day before Lunasa (early August).
               </p>
+
+              <h3>Leap years, cycles and ages</h3>
+
+              <p>
+                Years are grouped into 128-year cycles, analogous to centuries, the Chinese sexagenary cycle, or the
+                Mayan Calendar Round. This number was chosen for the sake of correctly spacing leap years. Like in the
+                Gregorian calendar, years with numbers divisible by four are leap years, with some exceptions. In the
+                Gregorian calendar, years divisible by 100 are not leap years unless they are also divisible by 400.
+                In this calendar, the final year of each cycle is not a leap year, so that each 128-year cycle contains
+                31 leap years. The average length of a Gregorian year is 365.2425 days, while the average length of
+                a year in this calendar is 365.2421875 days. The mean tropical year is about 365.24217 mean solar days,
+                so it is more closely tracked by this calendar than the Gregorian calendar. The difference in average
+                year length means that this calendar and the Gregorian calendar will drift apart by one day every 3200
+                years. Of course, since the leap years are distributed differently, a given Gregorian date will vary a
+                bit in which date it corresponds to in this calendar even on short timescales.
+              </p>
+
+              <p>
+                Cycles are further grouped into ages, which last 12 cycles, or 1,536 years.
+                Year names are given as "the x<sup>th</sup> year of the y<sup>th</sup> cycle of the z<sup>th</sup> age".
+                The cycles within an age can be thought of as analogous to months in a year, with each age proceeding
+                through a seasonal cycle beginning with spring and ending with winter.
+              </p>
+
+              <p>
+                The first era of this calendar began in February of {-FIRST_YEAR} BCE.
+                There's nothing special about that specific year,
+                but it is approximately when the first known true writing dates to, with the intent that all written
+                history should fall into the positive years of the calendar rather than messing with some kind of
+                confusing BCE situation.
+              </p>
+
+              <p>
+                We are currently living in the 4<sup>th</sup> age of the calendar. Here are the Gregorian years in
+                which the first five ages begin:
+              </p>
+
+              <ul>
+                {[0, 1, 2, 3, 4].map(i => (
+                    <li key={i}>
+                      the {ordinal(i + 1)} age {i > 3 ? "will begin" : "began"} in {gregorianYearWithEra(FIRST_YEAR + (i * CYCLE_LENGTH * AGE_LENGTH) + 1)}
+                    </li>
+                ))}
+              </ul>
+
+              <p>
+                Here are the Gregorian years in which the cycles of the 4<sup>th</sup> age begin:
+              </p>
+
+              <ul>
+                {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(i => (
+                    <li key={i}>
+                      the {ordinal(i + 1)} cycle of the 4<sup>th</sup> age {i > 5 ? "will begin" : "began"} in {gregorianYearWithEra(FIRST_YEAR + (3 * CYCLE_LENGTH * AGE_LENGTH) + (i*CYCLE_LENGTH) + 1)}
+                    </li>
+                ))}
+              </ul>
 
               <h3>Extended calendar</h3>
 

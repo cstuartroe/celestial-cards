@@ -75,6 +75,10 @@ export class GregorianDate {
     return out;
   }
 
+  yearsAfter(years: number) {
+    return new GregorianDate(this.getYear() + years, this.getMonth(), this.getDate());
+  }
+
   difference(other: GregorianDate) {
     return (this.getTime() - other.getTime()) / (24*60*60*1000);
   }
@@ -96,15 +100,28 @@ export class GregorianDate {
   }
 }
 
-export const NEW_YEARS_DAYS: [GregorianDate, number][] = [
-    [new GregorianDate(1600, 1, 6), 4946],
-    [new GregorianDate(1800, 1, 5), 5146],
-    [new GregorianDate(1900, 1, 5), 5246],
-    [new GregorianDate(1950, 1, 5), 5296],
-    [new GregorianDate(1990, 1, 4), 5336],
-    [new GregorianDate(2016, 1, 5), 5362],
+export function gregorianYearWithEra(year: number) {
+  if (year <= 0) {
+    return `${-year + 1} BCE`;
+  } else {
+    return `${year} CE`;
+  }
+}
+
+export const FIRST_YEAR = -3346;
+const NEW_YEARS_DAYS: GregorianDate[] = [
+    new GregorianDate(1400, 1, 4),
+    new GregorianDate(1600, 1, 5),
+    new GregorianDate(1800, 1, 4),
+    new GregorianDate(1900, 1, 5),
+    new GregorianDate(1950, 1, 4),
+    new GregorianDate(1990, 1, 4),
+    new GregorianDate(2016, 1, 5),
 ];
 
+// Chosen because ((128/4) - 1)/128 = .2421875 is very close to the fractional mean solar days in a mean tropical year
+export const CYCLE_LENGTH = 128;
+export const AGE_LENGTH = 12;
 
 export type Day = {
   quarter: number, // -1 for NYD, 0 for northern hemisphere spring, so on (-2 for leap day)
@@ -119,8 +136,27 @@ export function dayEq(day1: Day, day2: Day) {
   }
 }
 
-export function isLeapYear(year: number) {
-  return (year % 4 === 0) && ((year % 100 !== 0) || (year % 1000 === 0));
+export function isGregorianLeapYear(year: number) {
+  if (year % 400 === 0) {
+    return true;
+  }
+  if (year % 100 === 0) {
+    return false;
+  }
+  if (year % 4 === 0) {
+    return true;
+  }
+  return false;
+}
+
+export function isNewLeapYear(year: number) {
+  if (year % 128 === 0) {
+    return false;
+  }
+  if (year % 4 === 0) {
+    return true;
+  }
+  return false;
 }
 
 export function maxMod(n: number, mod: number) {
@@ -164,15 +200,19 @@ export type NewDate = {
   year: number,
 }
 
-function yearInEpoch(year: number) {
-  return maxMod(year, 60)
+function getYearInCycle(year: number) {
+  return maxMod(year, CYCLE_LENGTH)
 }
 
-function getEpoch(year: number) {
-  return Math.ceil(year / 60);
+function getCycleInAge(year: number) {
+  return maxMod(Math.ceil(year / CYCLE_LENGTH), AGE_LENGTH);
 }
 
-function ordinal(n: number) {
+function getAge(year: number) {
+  return Math.ceil(year / (CYCLE_LENGTH * AGE_LENGTH))
+}
+
+export function ordinal(n: number) {
   let suffix: string = "";
 
   if ([11, 12].includes(n % 100)) {
@@ -194,23 +234,24 @@ function ordinal(n: number) {
 
 export function gregorianDateToNewDate(date: GregorianDate): NewDate {
   let i = NEW_YEARS_DAYS.length - 1;
-  while (NEW_YEARS_DAYS[i][0].getTime() > date.getTime()) {
+  while (NEW_YEARS_DAYS[i].getTime() > date.getTime()) {
     i--;
   }
 
-  let [nyd, year] = NEW_YEARS_DAYS[i];
+  let nyd = NEW_YEARS_DAYS[i];
+  let year = nyd.getYear() - FIRST_YEAR;
 
   while (true) {
     let next_nyd = nyd.daysAfter(365);
 
-    if (isLeapYear(year)) {
+    if (isNewLeapYear(year)) {
       next_nyd = next_nyd.daysAfter(1);
     }
 
     if (next_nyd.getTime() > date.getTime()) {
       return {
         year: year,
-        day: dayOfYear(date.difference(nyd), isLeapYear(year))
+        day: dayOfYear(date.difference(nyd), isNewLeapYear(year))
       };
     } else {
       nyd = next_nyd;
@@ -268,8 +309,9 @@ export function dayAndYearToJSX(d: NewDate): JSX.Element {
   return <span>
     {dayToString(d.day)}
     <br/>
-    of the {ordinal(yearInEpoch(d.year))} year of
-    the {ordinal(getEpoch(d.year))} era
+    of the {ordinal(getYearInCycle(d.year))} year
+    of the {ordinal(getCycleInAge(d.year))} cycle
+    of the {ordinal(getAge(d.year))} age
   </span>
 }
 
@@ -289,8 +331,8 @@ export function dayToCard(day: Day): Card {
 function gregorianDistribution(day: Day) {
   const result: {[key: string]: number} = {};
 
-  const startYear = NEW_YEARS_DAYS[0][1] + 1;
-  const numYears = 500;
+  const startYear = 1900 - FIRST_YEAR; // NEW_YEARS_DAYS[0].getYear() - FIRST_YEAR + 1;
+  const numYears = 200;
   for (let year = startYear; year <= startYear + numYears; year++) {
     const gd = newDateToGregorianDate({day, year});
     const key = `${gd.getMonth() + 1}-${gd.getDate()}`;
@@ -298,7 +340,7 @@ function gregorianDistribution(day: Day) {
     result[key] = (result[key] || 0) + 1;
   }
 
-  const firstGregorianYear = NEW_YEARS_DAYS[0][0].getYear() + 1;
+  const firstGregorianYear = NEW_YEARS_DAYS[0].getYear() + 1;
   const lastGregorianYear = firstGregorianYear + numYears;
 
   console.log(`Distribution of ${dayToString(day)} from Gregorian ${firstGregorianYear} to ${lastGregorianYear}:`)
