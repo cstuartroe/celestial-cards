@@ -277,6 +277,10 @@ $day_square_size: calc(2vw + 3vh);
       margin: 0;
       margin-top: calc(.4vh + .6vw);
       padding-top: 0;
+
+      svg {
+        margin-top: -.15vw;
+      }
     }
 
     &.skyday {
