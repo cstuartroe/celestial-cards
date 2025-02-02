@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {Link} from "react-router-dom";
 
 
-import {gregorianDateToNewDate, dayToCard, GregorianDate, dayEq, dayAndYearToJSX} from "./utils";
+import {gregorianDateToNewDate, dayToCard, GregorianDate, dayEq, dayAndYearToJSX, dayToString, ordinal} from "./utils";
 import {dateTable} from "./explanation";
 import CardImage from "../Card";
 
@@ -28,13 +28,18 @@ export default class NewCalendarBirthdayViewer extends Component<{}, State> {
         const startDate = date.yearsAfter(-yearsBackward).daysAfter(-10);
         const endDate = date.yearsAfter(yearsForward).daysAfter(10);
 
+        let text = <span>These are the corresponding Gregorian dates for {dayToString(newDate.day)} between {date.getYear() - yearsBackward} and {date.getYear() + yearsForward}:</span>;
+        if (yearsBackward === 0) {
+            text = <span>These are all your celestial birthdays up to your {ordinal(yearsForward)}:</span>
+        }
+
         return (
             <>
                 <p style={{textAlign: 'center'}}>
                     {dayAndYearToJSX(newDate)}
                 </p>
                 <CardImage {...dayToCard(newDate.day)} bigger/>
-                <p>These are all your celestial birthdays up to your 100th:</p>
+                <p>{text}</p>
                 {dateTable(
                     startDate,
                     endDate.difference(startDate),
