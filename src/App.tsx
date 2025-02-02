@@ -11,6 +11,7 @@ import Tensor from "./games/Tensor";
 import NewCalendar from "./calendar";
 import NewCalendarExplanation from "./calendar/explanation";
 import NewCalendarBirthdayViewer from "./calendar/birthday";
+import DayList from "./calendar/daylist";
 
 type PageState = {
     expandGames: () => void,
@@ -82,6 +83,10 @@ class App extends Component {
                     path: "/calendar/birthday",
                     element: <NewCalendarBirthdayViewer/>,
                 },
+                {
+                    path: "/calendar/daylist",
+                    element: <DayList/>,
+                }
             ])}/>
         );
     }
