@@ -20,10 +20,13 @@ export default class NewCalendarBirthdayViewer extends Component<{}, State> {
         };
     }
 
-    dateDisplay() {
+    dateDisplay(yearsBackward: number, yearsForward: number) {
         const datetime = new Date(this.state.date + "T00:00:00+0000");
         const date = new GregorianDate(datetime.getUTCFullYear(), datetime.getUTCMonth(), datetime.getUTCDate());
         const newDate = gregorianDateToNewDate(date);
+
+        const startDate = date.yearsAfter(-yearsBackward).daysAfter(-10);
+        const endDate = date.yearsAfter(yearsForward).daysAfter(10);
 
         return (
             <>
@@ -33,8 +36,8 @@ export default class NewCalendarBirthdayViewer extends Component<{}, State> {
                 <CardImage {...dayToCard(newDate.day)} bigger/>
                 <p>These are all your celestial birthdays up to your 100th:</p>
                 {dateTable(
-                    date,
-                    365.25*100 + 10,
+                    startDate,
+                    endDate.difference(startDate),
                     d => !dayEq(d.day, newDate.day),
                 )}
             </>
@@ -51,6 +54,9 @@ export default class NewCalendarBirthdayViewer extends Component<{}, State> {
 
     render() {
         const q = new URLSearchParams(window.location.search);
+
+        const yearsBackward = Number.parseInt(q.get("back") || "0");
+        const yearsForward = Number.parseInt(q.get("forward") || "100");
 
         return (
             <div className={'calendar-style'}>
@@ -77,7 +83,7 @@ export default class NewCalendarBirthdayViewer extends Component<{}, State> {
                                    style={{marginTop: "2vh"}}
                                    onChange={e => this.setDate(e.target.value)} />
 
-                            {q.get("date") && this.dateDisplay()}
+                            {q.get("date") && this.dateDisplay(yearsBackward, yearsForward)}
                         </div>
                     </div>
                 </div>
